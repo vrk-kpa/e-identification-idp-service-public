@@ -1,0 +1,492 @@
+##
+## Velocity Template for DisplayAttributeReleasePage view-state
+##
+## Velocity context will contain the following properties :
+##
+## attributeReleaseContext - context holding consentable attributes
+## attributeReleaseFlowDescriptor - attribute consent flow descriptor
+## attributeDisplayNameFunction - function to display attribute name
+## consentContext - context representing the state of a consent flow
+## encoder - HTMLEncoder class
+## flowExecutionKey - SWF execution key (this is built into the flowExecutionUrl)
+## flowExecutionUrl - form action location
+## flowRequestContext - Spring Web Flow RequestContext
+## profileRequestContext - OpenSAML profile request context
+## request - HttpServletRequest
+## response - HttpServletResponse
+## rpUIContext - context with SP UI information from the metadata
+## environment - Spring Environment object for property resolution
+
+#set ($sessionContext = $profileRequestContext.getSubcontext('net.shibboleth.idp.session.context.SessionContext'))
+#set ($idpSession = $sessionContext.getIdPSession())
+#set ($spContextSet = $idpSession.getSPSessions())
+#set ($spCounter = $spContextSet.size())
+
+#set ($authenticationResultSet = $idpSession.getAuthenticationResults())
+#set ($authenticationResultCounter = $authenticationResultSet.size())
+
+#set ($serviceName = $rpUIContext.serviceName)
+#set ($serviceDescription = $rpUIContext.serviceDescription)
+#set ($informationURL = $rpUIContext.informationURL)
+#set ($organizationLogo = $rpUIContext.getLogo())
+#set ($organizationName = $rpUIContext.organizationName)
+#set ($organizationDisplayName = $rpUIContext.organizationDisplayName)
+#set ($attributes = $attributeReleaseContext.getConsentableAttributes())
+## attributes
+#set ($vtjVerified = $attributes.get('vtjVerified'))
+#set ($idNum = $attributes.get('nationalIdentificationNumber'))
+#set ($givenName = $attributes.get('givenName'))
+#set ($firstName = $attributes.get('firstName'))
+#set ($surname = $attributes.get('sn'))
+#set ($protectionOrder = $attributes.get('protectionOrder'))
+#set ($cn = $attributes.get('cn'))
+#set ($eIdentificationNumber = $attributes.get('electronicIdentificationNumber'))
+#set ($legacyPersonName = $attributes.get('legacyPersonName'))
+#set ($legacyPin = $attributes.get('legacyPin'))
+#set ($legacyVersion = $attributes.get('legacyVersion'))
+#set ($mail = $attributes.get('mail'))
+#set ($displayName = $attributes.get('displayName'))
+#set ($telephone = $attributes.get('telephone'))
+#set ($kid= $attributes.get('kid'))
+#set ($municipality= $attributes.get('municipality'))
+#set ($municipalityCode= $attributes.get('municipalityCode'))
+#set ($domesticAddress= $attributes.get('domesticAddress'))
+#set ($postalCode= $attributes.get('postalCode'))
+#set ($city= $attributes.get('city'))
+#set ($foreignAddress= $attributes.get('foreignAddress'))
+#set ($foreignLocalityAndState= $attributes.get('foreignLocalityAndState'))
+#set ($foreignLocalityAndStateClearText= $attributes.get('foreignLocalityAndStateClearText'))
+#set ($stateCode= $attributes.get('stateCode'))
+#set ($temporaryPostalCode= $attributes.get('temporaryPostalCode'))
+#set ($temporaryDomesticAddress= $attributes.get('temporaryDomesticAddress'))
+#set ($temporaryCity= $attributes.get('temporaryCity'))
+#set ($finnishCitizenship= $attributes.get('finnishCitizenship'))
+#set ($personIdentifier= $attributes.get('personIdentifier'))
+#parse("./include.vm")
+<!doctype html>
+<!--[if lte IE 7]> <html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3 lte_ie9 lte_ie8 lte7"> <![endif]-->
+<!--[if IE 8]> <html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3 lte_ie9 lte_ie8 ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3 lte_ie9 ie9"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3"><!--<![endif]-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Tunnistuspalvelu</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/resources/stylesheets/style.css">
+    <script src="/resources/js/vendor/modernizr-2.8.3.min.js"></script>
+    <script>
+        var privacyStatementURL={};
+        privacyStatementURL["sv"]="${privacyStatementURLSv}";
+        privacyStatementURL["en"]="${privacyStatementURLEn}";
+        privacyStatementURL["fi"]="${privacyStatementURLFi}";
+
+        var serviceName={};
+        serviceName["sv"]="${spDisplayNameSv}";
+        serviceName["en"]="${spDisplayNameEn}";
+        serviceName["fi"]="${spDisplayNameFi}";
+
+        function setLocalisedUiFromMetadata() {
+            var psUrl;
+            function getLanguage() {
+                var SERVER_LANG_COOKIE_NAME = 'E-Identification-Lang';
+                var USER_LANG_COOKIE_NAME = 'E-Identification-Lang-User';
+                var userDefinedLang = Cookies.get(USER_LANG_COOKIE_NAME);
+                var serverDefinedLang = Cookies.get(SERVER_LANG_COOKIE_NAME);
+                return userDefinedLang ? userDefinedLang : serverDefinedLang;
+            };
+
+            function setServiceName(language) {
+                document.getElementById("serviceDisplayName").textContent = serviceName[language];
+            };
+
+            function getPrivacyStatementURL(language) {
+                return privacyStatementURL[language];
+            };
+
+            function setPrivacyStatementURL(value) {
+                document.getElementById("privacyStatement").setAttribute("href", value);
+            };
+
+            var definedLang = getLanguage();
+            setServiceName(definedLang);
+            psUrl = getPrivacyStatementURL(definedLang);
+            if (psUrl) {
+                setPrivacyStatementURL(psUrl);
+            } else {
+                var infoEl = document.getElementById("attribute-info");
+                var privacyEl = document.getElementById("privacy");
+                infoEl.removeChild(privacyEl);
+            }
+        };
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="/resources/js/vendor/respond.js"></script>
+
+    <![endif]-->
+</head>
+<body id="identification-service" onload="setLocalisedUiFromMetadata()">
+<a data-i18n="header__siirry_suoraan_sisaltoon" href="#main" class="visuallyhidden focusable">Siirry suoraan sisältöön</a>
+    #include("header.html")
+<main id="main" role="main" name="main">
+    <div class="main">
+        <div class="container">
+            <form id="attribute-form" action="$flowExecutionUrl" method="post">
+                <div class="row">
+                    <div class="col-xs-12 service-top">
+                        <p data-i18n="attribute__otsikko">
+                            Olet tunnistautumassa palveluun
+                        </p>
+                        #if ($spDisplayNameFi || $spDisplayNameSv || $spDisplayNameEn)
+                            <span class="text-big" id="serviceDisplayName"></span>
+                        #end
+                    </div>
+                    <div class="col-xs-12 col-md-7">
+                        <p class="text-notice" data-i18n="attribute__annettavat_tiedot">Tunnistautumisen yhteydessä sinusta välitetään seuraavat tiedot:</p>
+
+                        <div class="box box-solo">
+
+                            <table class="person-details">
+                                #if($idNum)
+                                    <tr>
+                                        <td data-i18n="attribute__hetu">Henkilötunnus:</td>
+                                        <td>
+                                            #foreach ($value in $idNum.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                                <br>
+                                            #end
+                                        </td>
+                                        <input id="$idNum.id" type="hidden" name="_shib_idp_consentIds"
+                                               value="$encoder.encodeForHTML($idNum.id)"/>
+                                    </tr>
+                                #end
+                                #if($kid)
+                                    <tr>
+                                        <td data-i18n="attribute__katsoid">Katso-ID:</td>
+                                        <td>
+                                            #foreach ($value in $kid.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                                <br>
+                                            #end
+                                        </td>
+                                        <input id="$kid.id" type="hidden" name="_shib_idp_consentIds"
+                                               value="$encoder.encodeForHTML($kid.id)"/>
+                                    </tr>
+                                #end
+                                #if($personIdentifier)
+                                    <tr>
+                                        <td data-i18n="attribute__personid">Person-ID:</td>
+                                        <td>
+                                            #foreach ($value in $personIdentifier.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                                <br>
+                                            #end
+                                        </td>
+                                        <input id="$personIdentifier.id" type="hidden" name="_shib_idp_consentIds"
+                                               value="$encoder.encodeForHTML($personIdentifier.id)"/>
+                                    </tr>
+                                #end
+                                #if ($vtjVerified && $vtjVerified.values.get(0).getValue() == "false")
+                                    #if($cn)
+                                        <tr>
+                                            <td data-i18n="attribute__nimi">Nimi:</td>
+                                            <td>
+                                                #foreach ($value in $cn.values)
+                                                    <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                                    <br>
+                                                #end
+                                            </td>
+                                            <input id="$cn.id" type="hidden" name="_shib_idp_consentIds"
+                                                   value="$encoder.encodeForHTML($cn.id)"/>
+                                        </tr>
+                                    #end
+                                #end
+                                #if($surname)
+                                    <tr>
+                                        <td data-i18n="attribute__sukunimi">Sukunimi:</td>
+                                        <td>
+                                            #foreach ($value in $surname.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                                <br>
+                                            #end
+                                        </td>
+                                        <input id="$surname.id" type="hidden" name="_shib_idp_consentIds"
+                                               value="$encoder.encodeForHTML($surname.id)"/>
+                                    </tr>
+                                #end
+                                #if($firstName)
+                                    <tr>
+                                        <td data-i18n="attribute__etunimet">Etunimet:</td>
+                                        <td>
+                                            #foreach ($value in $firstName.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                                <br>
+                                            #end
+                                        </td>
+                                        <input id="$firstName.id" type="hidden" name="_shib_idp_consentIds"
+                                               value="$encoder.encodeForHTML($firstName.id)"/>
+                                    </tr>
+                                #elseif($givenName)
+                                <tr>
+                                    <td data-i18n="attribute__givenname">Etunimi:</td>
+                                    <td>
+                                        #foreach ($value in $givenName.values)
+                                        <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                        <br>
+                                        #end
+                                    </td>
+                                </tr>
+                                #end
+                                #if($municipality)
+                                    <tr>
+                                        <td data-i18n="attribute__kotikunta">Kotikunta:</td>
+                                        <td>
+                                            #foreach ($value in $municipality.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                                <br>
+                                            #end
+                                        </td>
+                                        <input id="$municipality.id" type="hidden" name="_shib_idp_consentIds"
+                                               value="$encoder.encodeForHTML($municipality.id)"/>
+                                    </tr>
+                                #end
+
+                                #if($domesticAddress || $postalCode || $city)
+                                    <tr>
+                                        <td data-i18n="attribute__osoite">Lähiosoite:</td>
+                                        <td>
+                                            #foreach ($value in $domesticAddress.values)
+                                                <strong>
+                                                    $encoder.encodeForHTML($value.getDisplayValue())
+                                                    #if($postalCode || $city)
+                                                        &#44;
+                                                    #end
+                                                </strong>
+                                            #end
+                                            #foreach ($value in $postalCode.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                            #end
+                                            #foreach ($value in $city.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                            #end
+                                            <br>
+                                        </td>
+                                        #if($domesticAddress)
+                                            <input id="$domesticAddress.id" type="hidden" name="_shib_idp_consentIds"
+                                                   value="$encoder.encodeForHTML($domesticAddress.id)"/>
+                                        #end
+                                        #if($postalCode)
+                                            <input id="$postalCode.id" type="hidden" name="_shib_idp_consentIds"
+                                                   value="$encoder.encodeForHTML($postalCode.id)"/>
+                                        #end
+                                        #if($city)
+                                            <input id="$city.id" type="hidden" name="_shib_idp_consentIds"
+                                                   value="$encoder.encodeForHTML($city.id)"/>
+                                        #end
+                                    </tr>
+                                #end
+                                #if( !$domesticAddress && ($foreignAddress || $foreignLocalityAndState || $foreignLocalityAndStateClearText) )
+                                    <tr>
+                                        <td data-i18n="attribute__osoite">Lähiosoite:</td>
+                                        <td>
+                                            #foreach ($value in $foreignAddress.values)
+                                                <strong>
+                                                    $encoder.encodeForHTML($value.getDisplayValue())
+                                                    #if($foreignLocalityAndState)
+                                                        &#44;
+                                                    #end
+                                                </strong>
+                                            #end
+                                            #foreach ($value in $foreignLocalityAndState.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                            #end
+                                            <br>
+                                        </td>
+                                        #if($foreignAddress)
+                                            <input id="$foreignAddress.id" type="hidden" name="_shib_idp_consentIds"
+                                                   value="$encoder.encodeForHTML($foreignAddress.id)"/>
+                                        #end
+                                        #if($foreignLocalityAndState)
+                                            <input id="$foreignLocalityAndState.id" type="hidden" name="_shib_idp_consentIds"
+                                                   value="$encoder.encodeForHTML($foreignLocalityAndState.id)"/>
+                                        #end
+                                    </tr>
+                                #end
+
+                                #if($temporaryDomesticAddress || $temporaryCity || $temporaryPostalCode)
+                                    <tr>
+                                        <td data-i18n="attribute__tilapainen_osoite">Tilapäinen osoite:</td>
+                                        <td>
+                                            #foreach ($value in $temporaryDomesticAddress.values)
+                                                <strong>
+                                                    $encoder.encodeForHTML($value.getDisplayValue())
+                                                    #if($temporaryPostalCode || $temporaryCity)
+                                                        &#44;
+                                                    #end
+                                                </strong>
+                                            #end
+                                            #foreach ($value in $temporaryPostalCode.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                            #end
+                                            #foreach ($value in $temporaryCity.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                            #end
+                                            <br>
+                                        </td>
+                                        #if($temporaryDomesticAddress)
+                                            <input id="$temporaryDomesticAddress.id" type="hidden" name="_shib_idp_consentIds"
+                                                   value="$encoder.encodeForHTML($temporaryDomesticAddress.id)"/>
+                                        #end
+                                        #if($temporaryPostalCode)
+                                            <input id="$temporaryPostalCode.id" type="hidden" name="_shib_idp_consentIds"
+                                                   value="$encoder.encodeForHTML($temporaryPostalCode.id)"/>
+                                        #end
+                                        #if($temporaryCity)
+                                            <input id="$temporaryCity.id" type="hidden" name="_shib_idp_consentIds"
+                                                   value="$encoder.encodeForHTML($temporaryCity.id)"/>
+                                        #end
+                                    </tr>
+                                #end
+                                #if($mail)
+                                    <tr>
+                                        <td data-i18n="attribute__email">Sähköposti:</td>
+                                        <td>
+                                            #foreach ($value in $mail.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                                <br>
+                                            #end
+                                        </td>
+                                        <input id="$mail.id" type="hidden" name="_shib_idp_consentIds"
+                                               value="$encoder.encodeForHTML($mail.id)"/>
+                                    </tr>
+                                #end
+                                #if($protectionOrder)
+                                    <tr><td colspan="2">&nbsp;</td></tr>
+                                    <tr>
+                                        <td colspan="2" data-i18n="attribute__turvakielto">Väestötietojärjestelmään merkitty turvakielto. Osoitetietoja ei välitetä asiointipalvelulle.</td>
+                                        <input id="$protectionOrder.id" type="hidden" name="_shib_idp_consentIds"
+                                               value="$encoder.encodeForHTML($protectionOrder.id)"/>
+                                    </tr>
+                                #end
+                            </table>
+                            #if($municipalityCode)
+                                <input id="$municipalityCode.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($municipalityCode.id)"/>
+                            #end
+                            #if($telephone)
+                                <input id="$telephone.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($telephone.id)"/>
+                            #end
+                            #if($stateCode)
+                                <input id="$stateCode.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($stateCode.id)"/>
+                            #end
+                            #if($foreignLocalityAndStateClearText)
+                                <input id="$foreignLocalityAndStateClearText.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($foreignLocalityAndStateClearText.id)"/>
+                            #end
+                            #if($eIdentificationNumber)
+                                <input id="$eIdentificationNumber.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($eIdentificationNumber.id)"/>
+                            #end
+                            #if($displayName)
+                                <input id="$displayName.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($displayName.id)"/>
+                            #end
+                            #if($givenName)
+                                <input id="$givenName.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($givenName.id)"/>
+                            #end
+                            #if($legacyPersonName)
+                                <input id="$legacyPersonName.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($legacyPersonName.id)"/>
+                            #end
+                            #if($legacyPin)
+                                <input id="$legacyPin.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($legacyPin.id)"/>
+                            #end
+                            #if($legacyVersion)
+                                <input id="$legacyVersion.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($legacyVersion.id)"/>
+                            #end
+                            #if($vtjVerified)
+                                <input id="$vtjVerified.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($vtjVerified.id)"/>
+                            #end
+                            #if($finnishCitizenship)
+                                <input id="$finnishCitizenship.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($finnishCitizenship.id)"/>
+                            #end
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-md-8">
+
+                        <input id="_shib_idp_doNotRememberConsent" type="hidden" name="_shib_idp_consentOptions"
+                               value="_shib_idp_doNotRememberConsent"/>
+
+                    ## NOTE! These two options will be handled in the future, thath's why they're commented out at the moment!
+                    ##<input id="_shib_idp_rememberConsent" type="hidden" name="_shib_idp_consentOptions" value="_shib_idp_rememberConsent" />
+                    ##<input id="_shib_idp_globalConsent" type="radio" name="_shib_idp_consentOptions" value="_shib_idp_globalConsent" />
+
+                        <button id="continue-button" type="submit" name="_eventId_proceed" data-i18n="attribute__jatka">Jatka palveluun</button>
+                        #if($spCounter > 0 && $authenticationResultCounter == 1)
+                            <a id="reject-link" href="#" class="secondary-link" data-i18n="attribute__keskeytys">Keskeytä siirtyminen</a>
+                        #else
+                            <a href="javascript:void(0)" onclick="window.location = '$flowExecutionUrl&_eventId_RemoveAuthenticationResult'" data-i18n="attribute__keskeytys">Keskeytä siirtyminen</a>
+                        #end
+                    </div>
+                </div>
+            </form>
+
+            <div class="row">
+                <br/><br/>
+
+                <div id="attribute-info" class="col-xs-12">
+                    <div class="text">
+                        #if ($vtjVerified && $vtjVerified.values.get(0).getValue() == "true")
+                            <p data-i18n="attribute__tietolahde">Henkilötietosi on haettu Väestötietojärjestelmästä.</p>
+                        #end
+                    </div>
+                    <div id="privacy" class="text">
+                        <p><span data-i18n="attribute__tietolahde__rekisteriseloste__kuvaus">Palvelu, johon olet tunnistautumassa, tarvitsee henkilötietosi asiointia varten. Palvelun
+                            rekisteriseloste kuvaa tarkemmin tietojen käyttötarkoituksen.</span>
+                            <a id="privacyStatement" href="" rel="external" data-i18n="attribute__tietolahde__rekisteriseloste__linkki">Palvelun rekisteriseloste</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+    #include("footer.html")
+<script src="/resources/js/vendor/jquery-1.11.2.min.js"></script>
+<script src="/resources/js/vendor/js.cookie.js"></script>
+<script src="/resources/js/vendor/i18next.min.js"></script>
+<script src="/resources/js/vendor/jquery-i18next.js"></script>
+<script src="/resources/js/vendor/i18nextXHRBackend.min.js"></script>
+<script src="/resources/js/vendor/domready.js"></script>
+<script src="/resources/js/plugins.js"></script>
+<script src="/resources/js/main.js"></script>
+<script src="/resources/js/idp_localisation.js"></script>
+<script src="/resources/js/attributerelease.js"></script>
+<script>
+
+    function setLanguage(lang) {
+        idpLocalisation.setUserLanguage(lang);
+        location.reload();
+    }
+
+    domready(function () {
+        var language = idpLocalisation.getLanguage();
+        $(".language-selection > li > a[lang=" + language + "]").attr("class", "selected");
+        idpLocalisation.localise(language, '#identification-service', '/static/localisation',
+                'suomifi-tunnistaminen-resource-idp_attribute_labels');
+    });
+</script>
+</body>
+</html>

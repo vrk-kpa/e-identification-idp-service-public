@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+
+       default-init-method="initialize"
+       default-destroy-method="destroy">
+
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer"
+          p:placeholderPrefix="%{" p:placeholderSuffix="}" />
+
+    <bean class="net.shibboleth.idp.profile.impl.ProfileActionBeanPostProcessor" />
+    <bean class="net.shibboleth.ext.spring.config.IdentifiableBeanPostProcessor" />
+
+    <bean id="ContextCheckProxyFail" parent="shibboleth.Conditions.AND">
+        <constructor-arg>
+            <list>
+                <bean class="net.shibboleth.idp.profile.logic.SimpleAttributePredicate" p:useUnfilteredAttributes="true">
+                    <property name="attributeValueMap">
+                        <map>
+                            <entry key="proxySessionMismatch">
+                                <list>
+                                    <value>true</value>
+                                </list>
+                            </entry>
+                        </map>
+                    </property>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="ContextCheckPredicate" parent="shibboleth.Conditions.AND">
+        <constructor-arg>
+            <list>
+                <ref bean="BasicVtjVerification"/>
+                <bean class="net.shibboleth.idp.profile.logic.SimpleAttributePredicate" p:useUnfilteredAttributes="true">
+                    <property name="attributeValueMap">
+                        <map>
+                            <entry key="vtjInvalid">
+                                <list>
+                                    <value>false</value>
+                                </list>
+                            </entry>
+                        </map>
+                    </property>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="BasicVtjVerification" parent="shibboleth.Conditions.OR">
+        <constructor-arg>
+            <list>
+                <bean class="net.shibboleth.idp.profile.logic.SimpleAttributePredicate" p:useUnfilteredAttributes="true">
+                    <property name="attributeValueMap">
+                        <map>
+                            <entry key="vtjVerified">
+                                <list>
+                                    <value>true</value>
+                                </list>
+                            </entry>
+                        </map>
+                    </property>
+                </bean>
+                <bean class="net.shibboleth.idp.profile.logic.SimpleAttributePredicate" p:useUnfilteredAttributes="true">
+                    <property name="attributeValueMap">
+                        <map>
+                            <entry key="vtjRequired">
+                                <list>
+                                    <value>false</value>
+                                </list>
+                            </entry>
+                        </map>
+                    </property>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+    <bean id="DestroySession" class="fi.vm.kapa.identification.shibboleth.flow.DestroySession" scope="prototype"
+          p:sessionManager-ref="shibboleth.SessionManager" />
+</beans>

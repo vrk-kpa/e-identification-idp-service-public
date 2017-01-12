@@ -1,0 +1,70 @@
+- name: Copy Shibboleth install properties
+  template: src={{ tempdir }}/idp-install.properties.template dest={{ tempdir }}/filled/idp-install.properties
+
+- name: Copy Shibboleth install script
+  template: src={{ tempdir }}/idp-install.sh.template dest={{ tempdir }}/filled/idp-install.sh
+
+- name: Copy Identity Provider properties
+  template: src={{ tempdir }}/identity-provider.properties.template dest={{ tempdir }}/filled/identity-provider.properties
+
+- name: Copy Tomcat server.xml
+  template: src={{ tempdir }}/server.xml.template dest={{ tempdir }}/filled/server.xml
+
+- name: Create credentials dir
+  local_action: shell mkdir {{ tempdir }}/filled/credentials
+
+- name: Create metadata dir
+  local_action: shell mkdir {{ tempdir }}/filled/metadata
+
+- name: Copy tomcat_keystore
+  local_action: copy src={{ conf_root }}/certs/{{ host }}/tomcat_keystore dest={{ tempdir }}/filled/credentials/tomcat_keystore
+
+- name: Copy Shibboleth credentials
+  local_action: copy src={{ conf_root }}/certs/{{ shibgen_idp_id }}/idp-encryption.key dest={{ tempdir }}/filled/credentials
+
+- name: Copy Shibboleth credentials
+  local_action: copy src={{ conf_root }}/certs/{{ shibgen_idp_id }}/idp-encryption.crt dest={{ tempdir }}/filled/credentials
+
+- name: Copy Shibboleth credentials
+  local_action: copy src={{ conf_root }}/certs/{{ shibgen_idp_id }}/idp-signing.key dest={{ tempdir }}/filled/credentials
+
+- name: Copy Shibboleth credentials
+  local_action: copy src={{ conf_root }}/certs/{{ shibgen_idp_id }}/idp-signing.crt dest={{ tempdir }}/filled/credentials
+
+- name: Copy Shibboleth metadata
+  local_action: copy src={{ conf_root }}/certs/{{ shibgen_idp_id }}/idp-metadata.xml dest={{ tempdir }}/filled/metadata/
+
+- name: Copy Identity Provider access-control.xml
+  template: src={{ tempdir }}/access-control.xml.template dest={{ tempdir }}/filled/access-control.xml
+
+- name: Copy Identity Provider idp.properties
+  template: src={{ tempdir }}/idp.properties.template dest={{ tempdir }}/filled/idp.properties
+
+- name: Copy Identity Provider metadata-providers.xml
+  template: src={{ tempdir }}/metadata-providers.xml.template dest={{ tempdir }}/filled/metadata-providers.xml
+
+- name: Copy Identity Provider attribute-resolver-ext-connector.xml
+  template: src={{ tempdir }}/attribute-resolver-ext-connector.xml.template dest={{ tempdir }}/filled/attribute-resolver-ext-connector.xml
+
+- name: Copy Shib error.jsp
+  template: src={{ tempdir }}/views_error.jsp.template dest={{ tempdir }}/filled/views_error.jsp
+
+- name: Copy tomcat error.jsp
+  template: src={{ tempdir }}/webapp_error.jsp.template dest={{ tempdir }}/filled/webapp_error.jsp
+
+- name: Copy idp-setenv.sh
+  template: src={{ tempdir }}/idp-setenv.sh.template dest={{ tempdir }}/filled/idp-setenv.sh
+
+- name: Copy shibboleth_logback.xml
+  template: src={{ tempdir }}/shibboleth_logback.xml.template dest={{ tempdir }}/filled/shibboleth_logback.xml
+
+
+- name: Copy Shibboleth relying-party.xml
+  local_action: copy src={{ confdir }}/relying-party.xml dest={{ tempdir }}/filled/relying-party.xml
+
+- name: Copy Shibboleth global.xml
+  local_action: copy src={{ confdir }}/global.xml dest={{ tempdir }}/filled/global.xml
+
+- name: Create filled template tar
+  local_action: shell tar -C {{ tempdir }}/filled/ -zvcf {{ tempdir }}/filled_templates.tgz .
+  delegate_to: localhost

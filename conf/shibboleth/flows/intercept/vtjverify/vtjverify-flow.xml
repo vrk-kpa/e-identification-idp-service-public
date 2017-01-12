@@ -1,0 +1,24 @@
+<flow xmlns="http://www.springframework.org/schema/webflow"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.springframework.org/schema/webflow http://www.springframework.org/schema/webflow/spring-webflow.xsd"
+      parent="intercept.abstract">
+
+    <decision-state id="CheckProxySessionMismatch">
+        <if test="ContextCheckProxyFail.apply(opensamlProfileRequestContext)"
+            then="DestroySession" else="CheckContext" />
+    </decision-state>
+
+    <action-state id="DestroySession">
+         <evaluate expression="DestroySession" />
+         <evaluate expression="'proceed'" />
+         <transition on="proceed" to="InvalidProfileContext" />
+    </action-state>
+
+    <decision-state id="CheckContext">
+        <if test="ContextCheckPredicate.apply(opensamlProfileRequestContext)"
+            then="proceed" else="VtjVerificationFailed" />
+    </decision-state>
+
+    <bean-import resource="vtjverify-beans.xml" />
+
+</flow>

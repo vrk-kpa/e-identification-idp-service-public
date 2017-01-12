@@ -1,0 +1,1 @@
+The files in this dir have to be copied with ansible template module. Files in ../conf can be copied directly.

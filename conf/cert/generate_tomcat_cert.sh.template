@@ -1,0 +1,56 @@
+#!/bin/sh
+
+#Create a new keystore for tomcat. Use existing root CA in ./kapa-dev-ca
+
+cd /opt/cert
+
+#Tomcat SSL self-signed cert
+keytool \
+      -genkey \
+      -keyalg RSA \
+      -keysize 2048 \
+      -keystore  /opt/shibboleth-idp/credentials/tomcat_keystore \
+      -alias     tomcat_ssl \
+      -storepass {{ tomcat_cert_storepass }} \
+      -keypass   {{ tomcat_cert_keypass }} \
+      -dname {{ tomcat_cert_dname }}
+
+#Export CSR
+keytool \
+    -certreq \
+    -keysize 2048 \
+    -alias tomcat_ssl \
+    -keyalg RSA \
+    -file tomcat_certreq.csr \
+    -keystore /opt/shibboleth-idp/credentials/tomcat_keystore \
+    -keypass   {{ tomcat_cert_keypass }} \
+    -storepass {{ tomcat_cert_storepass }}
+
+#Sign CSR with root CA
+openssl x509 \
+    -req \
+    -CA kapa-dev-ca/{{ kapa_dev_ca_out }} \
+    -CAkey kapa-dev-ca/{{ kapa_dev_ca_keyout }} \
+    -in tomcat_certreq.csr \
+    -out tomcat_cert_signed.crt \
+    -days 365 \
+    -CAcreateserial
+
+#Import CA root into keystore
+yes | keytool \
+    -import \
+    -keystore /opt/shibboleth-idp/credentials/tomcat_keystore \
+    -storepass {{ tomcat_cert_storepass }} \
+    -file kapa-dev-ca/{{ kapa_dev_ca_out }} \
+    -alias kapadevCAroot
+
+#Import CA signed cert into keystore
+keytool \
+    -import \
+    -keystore /opt/shibboleth-idp/credentials/tomcat_keystore \
+    -storepass {{ tomcat_cert_storepass }} \
+    -file tomcat_cert_signed.crt \
+    -alias tomcat_ssl \
+    -keypass {{ tomcat_cert_keypass }}
+
+

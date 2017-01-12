@@ -1,0 +1,27 @@
+# Shibboleth Identity Provider properties
+proxy.url={{proxy_rest_url}}/rest/proxy/
+sp.redirect.url={{sp_redirect_url}}
+sp.login.path={{sp_login_path}}
+discovery.page.path={{discovery_page_path}}
+default.error.url={{ idpconf_error_url }}
+failure.param.internal=int
+failure.param.idp.ext=idpext
+failure.param.entityid=entid
+failure.param.phaseid=phid
+failure.param.cancel=cancel
+# -----------------------------------------------
+# NOTE! These values MUST match to what Proxy and SP are using
+# since these two shared values define the phase ID HMAC calculation!
+phase.id.shared.secret={{phase_id_shared_secret}}
+phase.id.time.built.interval={{phase_id_time_built_interval}}
+phase.id.time.init.interval={{phase_id_time_interval}}
+phase.id.algorithm=HmacSHA256
+phase.id.step.one={{phase_id_step_one}}
+phase.id.step.three={{phase_id_step_three}}
+phase.id.step.four={{phase_id_step_four}}
+phase.id.step.five={{phase_id_step_five}}
+# -----------------------------------------------
+##  smetadata
+smetadata.location={{smetadata_location}}
+smetadata.timeout={{smetadata_timeout}}
+smetadata.refresh.rate.minutes={{smetadata_refresh_rate_minutes}}

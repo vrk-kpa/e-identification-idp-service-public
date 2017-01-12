@@ -1,0 +1,20 @@
+#!/bin/sh
+
+#(Re)create a root CA and CA browser authority cert for _development use_.
+
+cd /opt/cert/kapa-dev-ca
+
+#Generate root CA
+#TODO Unencrypted key ('nodes') - for development use only!
+openssl req \
+    -new \
+    -nodes \
+    -x509 \
+    -extensions v3_ca \
+    -keyout {{ kapa_dev_ca_keyout }} \
+    -out {{ kapa_dev_ca_out }} \
+    -days 1825 \
+    -subj {{ kapa_dev_ca_subj }}
+
+#Export CA cert for browsers
+openssl x509 -in {{ kapa_dev_ca_out }} -out {{ kapa_dev_ca_browsercert }}
