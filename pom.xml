@@ -1,0 +1,332 @@
+<!--
+
+    The MIT License
+    Copyright (c) 2015 Population Register Centre
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>fi.vm.kapa.identification</groupId>
+    <artifactId>identity-provider</artifactId>
+    <packaging>jar</packaging>
+    <name>Shibboleth :: Identity Provider</name>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <gson.version>2.3.1</gson.version>
+        <spring.version>4.1.4.RELEASE</spring.version>
+        <spring.security.version>3.2.6.RELEASE</spring.security.version>
+        <spring.webflow.version>2.4.1.RELEASE</spring.webflow.version>
+        <servlet.version>3.0.1</servlet.version>
+        <slf4j.version>1.7.10</slf4j.version>
+        <shibboleth.version>3.2.1</shibboleth.version>
+        <junit.version>4.12</junit.version>
+        <mockito.version>1.10.19</mockito.version>
+        <docker.image.tag></docker.image.tag>
+        <docker.image.prefix>dev-docker-registry.kapa.ware.fi</docker.image.prefix>
+        <spotify-docker.version>0.3.1</spotify-docker.version>
+        <jersey.version>2.22.1</jersey.version>
+        <!-- KAPA internal versions -->
+        <kapa.shared.version>1.0-SNAPSHOT</kapa.shared.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>Shibboleth-net-releases</id>
+            <name>Shibboleth Nexus release repository</name>
+            <url>https://build.shibboleth.net/nexus/content/repositories/releases</url>
+        </repository>
+        <repository>
+            <id>Shibboleth-net-third-party</id>
+            <name>Shibboleth Nexus 3rd party repository</name>
+            <url>https://build.shibboleth.net/nexus/content/repositories/thirdparty</url>
+        </repository>
+        <repository>
+            <id>shib-release</id>
+            <url>https://build.shibboleth.net/nexus/content/groups/public</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>shib-snapshot</id>
+            <url>https://build.shibboleth.net/nexus/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+
+        <!-- NOTE! All dependencies from here until the end
+             of note must be explicitly copied to 'edit-webapps'
+             directory so they must be handled separately by
+             the jar-with-dependencies task!
+          -->
+        <!-- KAPA internal deps -->
+
+        <dependency>
+            <groupId>fi.vm.kapa.identification</groupId>
+            <artifactId>shared</artifactId>
+            <version>${kapa.shared.version}</version>
+        </dependency>
+
+        <!-- Spring Security deps -->
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring.security.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>aopalliance</groupId>
+                    <artifactId>aopalliance</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-expression</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Jersey deps -->
+
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-proxy-client</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+
+        <!-- End NOTE -->
+
+        <!-- All these dependencies below are already
+             included in the Shibboleth IdP package so these
+             can be kept in 'provided' scope.
+          -->
+        <!-- Shibboleth deps -->
+
+        <dependency>
+            <groupId>net.shibboleth.idp</groupId>
+            <artifactId>idp-authn-api</artifactId>
+            <version>${shibboleth.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.shibboleth.idp</groupId>
+            <artifactId>idp-attribute-resolver-api</artifactId>
+            <version>${shibboleth.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.shibboleth.idp</groupId>
+            <artifactId>idp-attribute-resolver-spring</artifactId>
+            <version>${shibboleth.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Spring deps -->
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.webflow</groupId>
+            <artifactId>spring-webflow</artifactId>
+            <version>${spring.webflow.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Javax deps -->
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${servlet.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Log4J deps -->
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Junit deps -->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito deps -->
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.3.13.v20161014</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>kapa-identity-provider</finalName>
+        <plugins>
+	    <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+	    </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.11</version>
+                <configuration>
+                    <header>com/mycila/maven/plugin/license/templates/MIT.txt</header>
+                    <properties>
+                        <owner>Population Register Centre</owner>
+                        <email>kirjaamo@vrk.fi</email>
+                        <project.inceptionYear>2015</project.inceptionYear>
+                    </properties>
+                    <excludes>
+                        <exclude>**/README</exclude>
+                        <exclude>conf/**</exclude>
+                        <exclude>script/**</exclude>
+                        <exclude>**/*.war</exclude>
+                        <exclude>**/.keep</exclude>
+                        <exclude>**/*.pub</exclude>
+                        <exclude>**/*.template</exclude>
+                        <exclude>**/*.csv</exclude>
+                        <exclude>**/Vagrantfile</exclude>
+                        <exclude>vagrant_deploy/**</exclude>
+                        <exclude>**/*.sh</exclude>
+                        <exclude>**/*.txt</exclude>
+                        <exclude>**/Dockerfile</exclude>
+                        <exclude>idp-authn-impl-discovery-1.0-SNAPSHOT/**</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${spotify-docker.version}</version>
+                <configuration>
+                    <imageName>${docker.image.prefix}/${project.artifactId}${docker.image.tag}</imageName>
+                    <dockerDirectory>.</dockerDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

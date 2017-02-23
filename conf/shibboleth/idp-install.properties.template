@@ -1,0 +1,3 @@
+idp.entityID={{ idpconf_entityid }}
+idp.sealer.storePassword= {{ idpconf_sealer_storepass }}
+idp.sealer.keyPassword= {{ idpconf_sealer_keypass }}

@@ -1,0 +1,9 @@
+- hosts: localhost
+  sudo: no
+  roles:
+    - create_tar
+  vars_files:
+    - "{{ local_variables }}"
+    - "{{ aprovarsfile }}"
+    - "{{ infrafile }}"
+

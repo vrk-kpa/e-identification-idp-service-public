@@ -1,0 +1,7 @@
+#!/bin/sh
+export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+export JAVA_OPTS="-server -Xmx{{ java_xmx_megabytes }}m -Djavax.net.ssl.trustStore=/opt/kapa-ca -Djavax.net.ssl.trustStorePassword={{ java_truststore_password }} -Djavax.net.ssl.keyStore=/usr/share/tomcat/properties/tomcat_keystore -Djavax.net.ssl.keyStorePassword={{ tomcat_cert_storepass }}"
+export IDP_HOME=/opt/shibboleth-idp
+export CATALINA_OUT=/data00/logs/catalina.out
+export CATALINA_OPTS=" -Djava.rmi.server.hostname={{ idp_host }}"
+

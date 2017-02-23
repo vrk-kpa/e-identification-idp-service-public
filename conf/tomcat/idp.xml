@@ -1,0 +1,6 @@
+<!-- TOMCAT_HOME/conf/Catalina/localhost/idp.xml -->
+<Context docBase="/opt/shibboleth-idp/war/idp.war"
+         privileged="true"
+         antiResourceLocking="false"
+         unpackWAR="true"
+         swallowOutput="true" />

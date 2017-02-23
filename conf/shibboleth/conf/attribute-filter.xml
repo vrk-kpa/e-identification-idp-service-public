@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<afp:AttributeFilterPolicyGroup id="ShibbolethFilterPolicy"
+        xmlns:afp="urn:mace:shibboleth:2.0:afp"
+        xmlns:basic="urn:mace:shibboleth:2.0:afp:mf:basic"
+        xmlns:saml="urn:mace:shibboleth:2.0:afp:mf:saml"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd
+                            urn:mace:shibboleth:2.0:afp:mf:basic http://shibboleth.net/schema/idp/shibboleth-afp-mf-basic.xsd
+                            urn:mace:shibboleth:2.0:afp:mf:saml http://shibboleth.net/schema/idp/shibboleth-afp-mf-saml.xsd">
+
+    <afp:AttributeFilterPolicy id="releaseTo">
+        <afp:PolicyRequirementRule xsi:type="basic:ANY"/>
+
+        <afp:AttributeRule attributeID="vtjVerified">
+            <afp:PermitValueRule xsi:type="basic:ANY"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="mail">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="protectionOrder">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+           
+        <afp:AttributeRule attributeID="cn">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+       
+        <afp:AttributeRule attributeID="sn">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="displayName">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="firstName">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="givenName">
+             <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="telephone">
+             <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="authenticationProvider">
+           <afp:DenyValueRule xsi:type="basic:ANY"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="electronicIdentificationNumber">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="nationalIdentificationNumber">
+             <afp:PermitValueRule xsi:type="basic:ANY"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="mobile">
+            <afp:DenyValueRule xsi:type="basic:ANY"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="personIdentifier">
+            <afp:PermitValueRule xsi:type="basic:ANY"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="kid">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="legacyKid">
+             <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="legacyPin">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="legacyPersonName">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="legacyVersion">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="municipality">
+             <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="municipalityCode">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="domesticAddress">
+             <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+         
+        <afp:AttributeRule attributeID="postalCode">
+             <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule> 
+        
+        <afp:AttributeRule attributeID="city">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="foreignAddress">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="foreignLocalityAndState">
+             <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="foreignLocalityAndStateClearText">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="stateCode">
+           <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="temporaryPostalCode">
+           <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="temporaryDomesticAddress">
+             <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="temporaryCity">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+        
+        <afp:AttributeRule attributeID="finnishCitizenship">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+    </afp:AttributeFilterPolicy>
+
+</afp:AttributeFilterPolicyGroup>

@@ -1,0 +1,46 @@
+#set ($outboundContext = $profileRequestContext.getOutboundMessageContext())
+#set ($samlPeerContext = $outboundContext.getSubcontext(
+    'org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext'))
+#set ($metadataContext = $samlPeerContext.getSubcontext(
+    'org.opensaml.saml.common.messaging.context.SAMLMetadataContext'))
+#set ($spEntity = $metadataContext.getEntityDescriptor())
+#set ($extensions = $spEntity.getSPSSODescriptor(
+    "urn:oasis:names:tc:SAML:2.0:protocol").getExtensions().getOrderedChildren())
+#set ($organizationURLs = $spEntity.getOrganization().getURLs())
+
+#foreach ($extension in $extensions)
+    #if ($extension.getElementQName().getLocalPart().equals("UIInfo"))
+        #foreach ($uiNode in $extension.getOrderedChildren())
+            #if ($uiNode.getElementQName().getLocalPart().equals("DisplayName") && $uiNode.getXMLLang().equals("fi"))
+                #set ($spDisplayNameFi = $uiNode.getValue())
+            #end
+            #if ($uiNode.getElementQName().getLocalPart().equals("DisplayName") && $uiNode.getXMLLang().equals("sv"))
+                #set ($spDisplayNameSv = $uiNode.getValue())
+            #end
+            #if ($uiNode.getElementQName().getLocalPart().equals("DisplayName") && $uiNode.getXMLLang().equals("en"))
+                #set ($spDisplayNameEn = $uiNode.getValue())
+            #end
+            #if ($uiNode.getElementQName().getLocalPart().equals("PrivacyStatementURL") && $uiNode.getXMLLang().equals("fi"))
+                #set ($privacyStatementURLFi = $uiNode.getValue())
+            #end
+            #if ($uiNode.getElementQName().getLocalPart().equals("PrivacyStatementURL") && $uiNode.getXMLLang().equals("sv"))
+                #set ($privacyStatementURLSv = $uiNode.getValue())
+            #end
+            #if ($uiNode.getElementQName().getLocalPart().equals("PrivacyStatementURL") && $uiNode.getXMLLang().equals("en"))
+                #set ($privacyStatementURLEn = $uiNode.getValue())
+            #end
+        #end
+    #end
+#end
+
+#foreach ($url in $organizationURLs)
+    #if ($url.getXMLLang().equals("fi"))
+        #set ($spOrganizationURLFi = $url.getValue())
+    #end
+    #if ($url.getXMLLang().equals("sv"))
+        #set ($spOrganizationURLSv = $url.getValue())
+    #end
+    #if ($url.getXMLLang().equals("en"))
+        #set ($spOrganizationURLEn = $url.getValue())
+    #end
+#end
