@@ -53,6 +53,16 @@
         <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/CurrentGivenName" friendlyName="firstName" encodeType="false" />
     </resolver:AttributeDefinition>
 
+    <resolver:AttributeDefinition id="familyName" xsi:type="ad:Simple" sourceAttributeID="samlFamilyName">
+        <resolver:Dependency ref="extDataConn" />
+        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/CurrentFamilyName" friendlyName="familyName" encodeType="false" />
+    </resolver:AttributeDefinition>
+
+    <resolver:AttributeDefinition id="dateOfBirth" xsi:type="ad:Simple" sourceAttributeID="samlDateOfBirth">
+        <resolver:Dependency ref="extDataConn" />
+        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/DateOfBirth" friendlyName="dateOfBirth" encodeType="false" />
+    </resolver:AttributeDefinition>
+
     <resolver:AttributeDefinition id="givenName" xsi:type="ad:Simple" sourceAttributeID="samlGivenName">
         <resolver:Dependency ref="extDataConn" />
         <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:2.5.4.42" friendlyName="givenName" encodeType="false" />
@@ -192,7 +202,7 @@
         <resolver:Dependency ref="extDataConn" />
         <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/PersonIdentifier" friendlyName="personIdentifier" encodeType="false" />
     </resolver:AttributeDefinition>
-    
+
     <resolver:AttributeDefinition id="finnishCitizenship" xsi:type="ad:Simple" sourceAttributeID="samlFinnishCitizenship">
         <resolver:Dependency ref="extDataConn" />
         <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.26" friendlyName="SuomenKansalaisuusTietokoodi" encodeType="false" />

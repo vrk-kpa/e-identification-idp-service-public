@@ -78,4 +78,20 @@ public class AttributeReleasePageTest {
         assertTrue(page.contains("<strong>givenName</strong>"));
     }
 
+    @Test
+    public void attributeTestPageShowsFamilyName() throws Exception {
+        Map<String,String> personAttributes = new HashMap<>();
+        personAttributes.put("familyName", "familyName");
+        attributeRelease.setPersonAttributes(personAttributes);
+        assertTrue(attributeRelease.renderPage().contains("<strong>familyName</strong>"));
+    }
+
+    @Test
+    public void attributeTestPageShowsDateOfBirth() throws Exception {
+        Map<String,String> personAttributes = new HashMap<>();
+        personAttributes.put("dateOfBirth", "1999-12-31");
+        attributeRelease.setPersonAttributes(personAttributes);
+        assertTrue(attributeRelease.renderPage().contains("<strong>1999-12-31</strong>"));
+    }
+
 }

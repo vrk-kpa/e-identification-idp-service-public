@@ -37,6 +37,8 @@
 #set ($idNum = $attributes.get('nationalIdentificationNumber'))
 #set ($givenName = $attributes.get('givenName'))
 #set ($firstName = $attributes.get('firstName'))
+#set ($familyName = $attributes.get('familyName'))
+#set ($dateOfBirth = $attributes.get('dateOfBirth'))
 #set ($surname = $attributes.get('sn'))
 #set ($protectionOrder = $attributes.get('protectionOrder'))
 #set ($cn = $attributes.get('cn'))
@@ -190,6 +192,19 @@
                                                value="$encoder.encodeForHTML($personIdentifier.id)"/>
                                     </tr>
                                 #end
+                                #if($dateOfBirth)
+                                <tr>
+                                    <td data-i18n="attribute__syntymaaika">Syntymäaika:</td>
+                                    <td>
+                                        #foreach ($value in $dateOfBirth.values)
+                                        <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                        <br>
+                                        #end
+                                    </td>
+                                    <input id="$dateOfBirth.id" type="hidden" name="_shib_idp_consentIds"
+                                           value="$encoder.encodeForHTML($dateOfBirth.id)"/>
+                                </tr>
+                                #end
                                 #if ($vtjVerified && $vtjVerified.values.get(0).getValue() == "false")
                                     #if($cn)
                                         <tr>
@@ -217,6 +232,19 @@
                                         <input id="$surname.id" type="hidden" name="_shib_idp_consentIds"
                                                value="$encoder.encodeForHTML($surname.id)"/>
                                     </tr>
+                                #end
+                                #if($familyName)
+                                <tr>
+                                    <td data-i18n="attribute__sukunimi">Sukunimi:</td>
+                                    <td>
+                                        #foreach ($value in $familyName.values)
+                                        <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                        <br>
+                                        #end
+                                    </td>
+                                    <input id="$familyName.id" type="hidden" name="_shib_idp_consentIds"
+                                           value="$encoder.encodeForHTML($familyName.id)"/>
+                                </tr>
                                 #end
                                 #if($firstName)
                                     <tr>
@@ -364,7 +392,7 @@
                                                value="$encoder.encodeForHTML($mail.id)"/>
                                     </tr>
                                 #end
-                                #if($protectionOrder)
+                                #if($protectionOrder && $protectionOrder.values.get(0).getValue() == "1")
                                     <tr><td colspan="2">&nbsp;</td></tr>
                                     <tr>
                                         <td colspan="2" data-i18n="attribute__turvakielto">Väestötietojärjestelmään merkitty turvakielto. Osoitetietoja ei välitetä asiointipalvelulle.</td>
