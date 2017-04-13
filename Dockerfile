@@ -109,6 +109,7 @@ CMD \
     ln -sf /data00/deploy/credentials/* /opt/shibboleth-idp/credentials && \
     rm -f /opt/shibboleth-idp/views/error.vm && \
     sh /opt/shibboleth-idp/bin/idp-rebuild.sh && \
+    cp /tmp/conf/shibboleth/system/flows/logout/logout-flow.xml /opt/shibboleth-idp/system/flows/logout/logout-flow.xml && \
     chown -R tomcat:tomcat /opt/identity-provider && \
     chown -R tomcat:tomcat /opt/shibboleth-idp && \
     service tomcat start && tail -f /etc/hosts
