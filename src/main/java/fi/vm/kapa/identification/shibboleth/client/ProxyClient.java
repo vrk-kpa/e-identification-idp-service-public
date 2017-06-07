@@ -49,9 +49,9 @@ public class ProxyClient {
     }
 
     public ProxyMessageDTO addSession(String relyingParty, String uid,
-                                      String key, String authMethodReqStr, String logTag) {
-        logger.debug("Add new session - relying party: {}, uid: {}, conversation key: {}, authentication methods: {}, tag: {}", relyingParty, uid, key, authMethodReqStr, logTag);
-        return proxyResource.fromIdPInitSession(relyingParty, uid, key, authMethodReqStr, logTag);
+                                      String key, String authMethodReqStr, String logTag, String authnRequestId) {
+        logger.debug("Add new session - relying party: {}, uid: {}, conversation key: {}, authentication methods: {}, tag: {}, authnRequestId: {}", relyingParty, uid, key, authMethodReqStr, logTag, authnRequestId);
+        return proxyResource.fromIdPInitSession(relyingParty, uid, key, authMethodReqStr, logTag, authnRequestId);
     }
 
     public ProxyMessageDTO getSessionByTokenId(String tokenId, String phaseId, String logTag) {

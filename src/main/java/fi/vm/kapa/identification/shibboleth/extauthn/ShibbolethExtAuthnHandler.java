@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Extensions;
+import org.opensaml.saml.saml2.core.RequestAbstractType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,11 +171,22 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
                 logger.debug("Relying party is: " + relyingParty);
                 
                 ProfileRequestContext prc = ExternalAuthentication.getProfileRequestContext(convKey, request);
-                
+
                 String language = resolveRequestLanguage(prc, request);
                 logger.debug("Language is: " + language);
                 setLangCookie(request, response, language);
-                           
+
+                // Get SAML AuthnRequest ID (needed for token at proxy)
+                String authnRequestId = "";
+                try {
+                    authnRequestId = ((RequestAbstractType) prc.getInboundMessageContext().getMessage()).getID();
+                    logger.info("AuthnRequest ID: " + authnRequestId);
+                }
+                catch (Exception e)
+                {
+                    logger.warn("Unable to resolve SAML AuthnRequest id!");
+                }
+
                 String requestedAuthenticationMethodSet = resolveRequestAuthenticationContextClassList(prc);
                 //Get existing uid from IdP session. Set value to 0 (AuthMethod INIT) if null.
                 String uid = existingAuthenticationSubjectName(prc);
@@ -182,7 +194,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
                     uid = SessionStatus.INIT.getStatusAsNumericalString(); //"0"
                 }
                 logger.debug("Existing session uid: " + uid);
-                redirectUrl = initialiseSession(proxyClient, uid, convKey, relyingParty, requestedAuthenticationMethodSet);
+                redirectUrl = initialiseSession(proxyClient, uid, convKey, relyingParty, requestedAuthenticationMethodSet, authnRequestId);
                 logger.debug("(Initial redirectUrl to SP:  " + redirectUrl);
             }
             /** Token ID is not empty or a status is present,
@@ -312,13 +324,13 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         ExternalAuthentication.finishExternalAuthentication(key, request, response);
     }
 
-    private String initialiseSession(ProxyClient proxyClient, String uid, String convKey, String relyingParty, String requestedAuthenticationMethodStr) {
+    private String initialiseSession(ProxyClient proxyClient, String uid, String convKey, String relyingParty, String requestedAuthenticationMethodStr, String authnRequestId) {
 
         String redirectUrl;
         String logTag = createLogTag();
         // Relying party parameter must match the allowed entity ID format
         if (UrlParamService.isValidEntityId(relyingParty)) {
-            String spCallUrl = sessionInit(proxyClient, uid, relyingParty, convKey, logTag, requestedAuthenticationMethodStr);
+            String spCallUrl = sessionInit(proxyClient, uid, relyingParty, convKey, logTag, requestedAuthenticationMethodStr, authnRequestId);
             if (StringUtils.isNotBlank(spCallUrl)) {
                 logger.debug("Session init OK, redirect to SP (3.)  - spCallUrl: {}", spCallUrl);
                 /** Session init OK, redirect to SP (3.) */
@@ -422,12 +434,12 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
      * @param requestedAuthenticationMethodSet
      * @return
      */
-    private String sessionInit(ProxyClient proxyClient, String uid, String relyingParty, String conversationKey, String logTag, final String requestedAuthenticationMethodSet) {
+    private String sessionInit(ProxyClient proxyClient, String uid, String relyingParty, String conversationKey, String logTag, final String requestedAuthenticationMethodSet, String authnRequestId) {
 
         String spCallUrl = null;
         ProxyMessageDTO responseEntity = null;
         try {
-            responseEntity = proxyClient.addSession(relyingParty, uid, conversationKey, requestedAuthenticationMethodSet, logTag);
+            responseEntity = proxyClient.addSession(relyingParty, uid, conversationKey, requestedAuthenticationMethodSet, logTag, authnRequestId);
 
             if (responseEntity != null) {
                 /**

@@ -152,6 +152,11 @@
         <afp:AttributeRule attributeID="finnishCitizenship">
             <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
         </afp:AttributeRule>
+
+        <afp:AttributeRule attributeID="authenticationToken">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+
     </afp:AttributeFilterPolicy>
 
 </afp:AttributeFilterPolicyGroup>

@@ -93,13 +93,20 @@
                        <p data-i18n="logout__info">Suomi.fi-tunnistaminen on julkishallinnon yhteinen tunnistuspalvelu, jonka avulla voit tunnistautua useaan eri palveluun yhdellä tunnistautumisella.</p>
                     </div>
                 </div>
-            </div>    
+            </div>
+            #if ( $profileRequestContext.getSubcontext( "fi.vm.kapa.identification.shibboleth.context.KatsoContext" ) )
+                <iframe style="display:none" src="{{ katso_global_logout_url }}">
+            #end
            #else
             <!-- If SAML logout with no extra work to do, complete the flow by redirecting to logout page. -->
-               #if ( $profileRequestContext.getProfileId().contains("saml2/logout") )
-                    <script type="text/javascript">
-                        window.location = '$flowExecutionUrl&_eventId=proceed';
-                    </script>
+               #if ( $profileRequestContext.getSubcontext( "fi.vm.kapa.identification.shibboleth.context.KatsoContext" ) )
+                   <iframe style="display:none" onload="window.location = '$flowExecutionUrl&_eventId=proceed'" src="{{ katso_global_logout_url }}">
+               #else
+                   #if ( $profileRequestContext.getProfileId().contains("saml2/logout") )
+                       <script type="text/javascript">
+                           window.location = '$flowExecutionUrl&_eventId=proceed';
+                       </script>
+                   #end
                #end
            #end
         </div>

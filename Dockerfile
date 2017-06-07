@@ -26,7 +26,6 @@ RUN mkdir -p /opt/shibboleth-idp/edit-webapp/WEB-INF/jsp && \
     cp /tmp/conf/shibboleth/conf/errors.xml /opt/shibboleth-idp/conf/errors.xml && \
     cp /tmp/conf/shibboleth/webapp/web.xml /opt/shibboleth-idp/edit-webapp/WEB-INF/web.xml && \
     cp /tmp/conf/shibboleth/views/intercept/attribute-release.vm /opt/shibboleth-idp/views/intercept/attribute-release.vm && \
-    cp /tmp/conf/shibboleth/views/logout.vm /opt/shibboleth-idp/views/logout.vm && \
     cp /tmp/conf/shibboleth/views/logout-propagate.vm /opt/shibboleth-idp/views/logout-propagate.vm && \
     cp /tmp/conf/shibboleth/views/logout-complete.vm /opt/shibboleth-idp/views/logout-complete.vm && \
     cp /tmp/conf/shibboleth/views/logout/propagate.vm /opt/shibboleth-idp/views/logout/propagate.vm && \
@@ -50,6 +49,7 @@ RUN mkdir -p /opt/shibboleth-idp/edit-webapp/WEB-INF/jsp && \
 :                             && \
 : Templates                   && \
 :                             && \
+    cp /tmp/conf/shibboleth/views/logout.vm.template /data00/templates/store/ && \
     cp /tmp/conf/shibboleth/idp-install.properties.template /data00/templates/store/ && \
     cp /tmp/conf/shibboleth/idp-install.sh.template /data00/templates/store/ && \
     cp /tmp/conf/tomcat/identity-provider.properties.template /data00/templates/store/ && \
@@ -68,6 +68,7 @@ RUN mkdir -p /opt/shibboleth-idp/edit-webapp/WEB-INF/jsp && \
 :                             && \
     mkdir -p /opt/identity-provider && \
     mkdir -p /usr/share/tomcat/properties && \
+    ln -sf /data00/deploy/logout.vm /opt/shibboleth-idp/views/logout.vm && \
     ln -sf /data00/deploy/idp-install.properties /usr/local/src/shibboleth-identity-provider/bin/idp-install.properties && \
     ln -sf /data00/deploy/idp-install.sh /usr/local/src/shibboleth-identity-provider/bin/idp-install.sh && \
     ln -sf /data00/deploy/identity-provider.properties /opt/identity-provider/identity-provider.properties && \
@@ -110,6 +111,8 @@ CMD \
     rm -f /opt/shibboleth-idp/views/error.vm && \
     sh /opt/shibboleth-idp/bin/idp-rebuild.sh && \
     cp /tmp/conf/shibboleth/system/flows/logout/logout-flow.xml /opt/shibboleth-idp/system/flows/logout/logout-flow.xml && \
+    cp /tmp/conf/shibboleth/system/flows/logout/slo-front-abstract-flow.xml /opt/shibboleth-idp/system/flows/saml/saml2/slo-front-abstract-flow.xml && \
+    cp /tmp/conf/shibboleth/system/flows/logout/slo-front-abstract-beans.xml /opt/shibboleth-idp/system/flows/saml/saml2/slo-front-abstract-beans.xml && \
     chown -R tomcat:tomcat /opt/identity-provider && \
     chown -R tomcat:tomcat /opt/shibboleth-idp && \
     service tomcat start && tail -f /etc/hosts
