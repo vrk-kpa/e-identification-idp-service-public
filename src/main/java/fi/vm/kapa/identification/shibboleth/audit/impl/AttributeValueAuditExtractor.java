@@ -23,67 +23,77 @@
 
 package fi.vm.kapa.identification.shibboleth.audit.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import net.shibboleth.idp.attribute.IdPAttributeValue;
 import net.shibboleth.idp.attribute.context.AttributeContext;
 import net.shibboleth.idp.profile.context.RelyingPartyContext;
 import net.shibboleth.utilities.java.support.annotation.constraint.NotEmpty;
 import net.shibboleth.utilities.java.support.logic.Constraint;
-
 import org.opensaml.messaging.context.navigate.ChildContextLookup;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 
 public class AttributeValueAuditExtractor implements Function<ProfileRequestContext,Collection<String>> {
-    
-    /** Class logger. */
-    @Nonnull private final Logger log = LoggerFactory.getLogger(AttributeValueAuditExtractor.class);
 
-    /** Lookup strategy for AttributeContext to read from. */
-    @Nonnull private final Function<ProfileRequestContext,AttributeContext> attributeContextLookupStrategy;
+    /**
+     * Class logger.
+     */
+    @Nonnull
+    private final Logger log = LoggerFactory.getLogger(AttributeValueAuditExtractor.class);
 
-    /** The attribute id whose value will be returned by this {@link Function}. */
-    @Nonnull @NotEmpty private final String attributeId;
-    
+    /**
+     * Lookup strategy for AttributeContext to read from.
+     */
+    @Nonnull
+    private final Function<ProfileRequestContext,AttributeContext> attributeContextLookupStrategy;
+
+    /**
+     * The attribute id whose value will be returned by this {@link Function}.
+     */
+    @Nonnull
+    @NotEmpty
+    private final String attributeId;
+
     /**
      * Constructor.
-     * 
+     *
      * @param attrId The attributeId whose value is returned by this {@link Function}.
      */
     public AttributeValueAuditExtractor(@Nonnull @NotEmpty final String attrId) {
         // Defaults to ProfileRequestContext -> RelyingPartyContext -> AttributeContext.
         this(Functions.compose(new ChildContextLookup<>(AttributeContext.class),
-                new ChildContextLookup<ProfileRequestContext,RelyingPartyContext>(RelyingPartyContext.class)), attrId);
+            new ChildContextLookup<ProfileRequestContext,RelyingPartyContext>(RelyingPartyContext.class)), attrId);
     }
-    
+
     /**
      * Constructor.
      *
      * @param strategy lookup strategy for {@link AttributeContext}
-     * @param attrId The attributeId whose value is returned by this {@link Function}.
+     * @param attrId   The attributeId whose value is returned by this {@link Function}.
      */
-    public AttributeValueAuditExtractor(@Nonnull final Function<ProfileRequestContext,AttributeContext> strategy, 
-            @Nonnull @NotEmpty final String attrId) {
+    public AttributeValueAuditExtractor(@Nonnull final Function<ProfileRequestContext,AttributeContext> strategy,
+                                        @Nonnull @NotEmpty final String attrId) {
         attributeContextLookupStrategy = Constraint.isNotNull(strategy,
-                "AttributeContext lookup strategy cannot be null");
+            "AttributeContext lookup strategy cannot be null");
         attributeId = Constraint.isNotEmpty(attrId, "attrId cannot be null nor empty!");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @Nullable public Collection<String> apply(@Nullable final ProfileRequestContext input) {
+    @Nullable
+    public Collection<String> apply(@Nullable final ProfileRequestContext input) {
         final AttributeContext attributeCtx = attributeContextLookupStrategy.apply(input);
         if (attributeCtx != null && attributeCtx.getIdPAttributes().keySet().contains(attributeId)) {
             final List<IdPAttributeValue<?>> values = attributeCtx.getIdPAttributes().get(attributeId).getValues();

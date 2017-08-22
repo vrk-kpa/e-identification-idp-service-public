@@ -37,12 +37,10 @@ import net.shibboleth.idp.authn.context.RequestedPrincipalContext;
 import net.shibboleth.idp.authn.principal.UsernamePrincipal;
 import net.shibboleth.idp.saml.authn.principal.AuthnContextClassRefPrincipal;
 import net.shibboleth.idp.session.context.SessionContext;
-
 import org.apache.commons.lang.StringUtils;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Extensions;
-import org.opensaml.saml.saml2.core.RequestAbstractType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +52,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -129,6 +126,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         }
     }
 
+
     /**
      * This method executes the identity building process in two parts. Depending on whether
      * a session already exists, it either initialises a new Proxy session or activates a
@@ -169,23 +167,12 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
                 //Get SP entityID
                 String relyingParty = String.valueOf(request.getAttribute(ExternalAuthentication.RELYING_PARTY_PARAM));
                 logger.debug("Relying party is: " + relyingParty);
-                
+
                 ProfileRequestContext prc = ExternalAuthentication.getProfileRequestContext(convKey, request);
 
                 String language = resolveRequestLanguage(prc, request);
                 logger.debug("Language is: " + language);
                 setLangCookie(request, response, language);
-
-                // Get SAML AuthnRequest ID (needed for token at proxy)
-                String authnRequestId = "";
-                try {
-                    authnRequestId = ((RequestAbstractType) prc.getInboundMessageContext().getMessage()).getID();
-                    logger.info("AuthnRequest ID: " + authnRequestId);
-                }
-                catch (Exception e)
-                {
-                    logger.warn("Unable to resolve SAML AuthnRequest id!");
-                }
 
                 String requestedAuthenticationMethodSet = resolveRequestAuthenticationContextClassList(prc);
                 //Get existing uid from IdP session. Set value to 0 (AuthMethod INIT) if null.
@@ -194,7 +181,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
                     uid = SessionStatus.INIT.getStatusAsNumericalString(); //"0"
                 }
                 logger.debug("Existing session uid: " + uid);
-                redirectUrl = initialiseSession(proxyClient, uid, convKey, relyingParty, requestedAuthenticationMethodSet, authnRequestId);
+                redirectUrl = initialiseSession(proxyClient, uid, convKey, relyingParty, requestedAuthenticationMethodSet);
                 logger.debug("(Initial redirectUrl to SP:  " + redirectUrl);
             }
             /** Token ID is not empty or a status is present,
@@ -222,7 +209,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
                     // purge session from proxy and send authn failed SAML response
                     try {
                         cancel(proxyClient, tid, pid, phaseIdInitSession,
-                                phaseIdBuiltSession, logTag, request, response);
+                            phaseIdBuiltSession, logTag, request, response);
                         return;
                     } catch (Exception e) {
                         logger.warn("<<{}>> Failed to purge session", logTag);
@@ -258,8 +245,8 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
                      * user's generated UID hash that is used to fetch the attributes
                      */
                         /** External authentication success. Give control back to Shibboleth IdP (7.) */
-                        ProfileRequestContext prc = ExternalAuthentication.getProfileRequestContext(keyAndUid[0], request);
                         //Get existing active authentication class principals from IdP session
+                        ProfileRequestContext prc = ExternalAuthentication.getProfileRequestContext(keyAndUid[0], request);
                         Set<Principal> principals = getExistingActiveAuthenticationClassPrincipals(prc);
                         logger.debug("Existing principals in principal set: " + !principals.isEmpty());
                         principals.add(new UsernamePrincipal(keyAndUid[1]));
@@ -324,13 +311,16 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         ExternalAuthentication.finishExternalAuthentication(key, request, response);
     }
 
-    private String initialiseSession(ProxyClient proxyClient, String uid, String convKey, String relyingParty, String requestedAuthenticationMethodStr, String authnRequestId) {
+    private String initialiseSession(ProxyClient proxyClient,
+                                     String uid, String convKey,
+                                     String relyingParty,
+                                     String requestedAuthenticationMethodStr) {
 
         String redirectUrl;
         String logTag = createLogTag();
         // Relying party parameter must match the allowed entity ID format
         if (UrlParamService.isValidEntityId(relyingParty)) {
-            String spCallUrl = sessionInit(proxyClient, uid, relyingParty, convKey, logTag, requestedAuthenticationMethodStr, authnRequestId);
+            String spCallUrl = sessionInit(proxyClient, uid, relyingParty, convKey, logTag, requestedAuthenticationMethodStr);
             if (StringUtils.isNotBlank(spCallUrl)) {
                 logger.debug("Session init OK, redirect to SP (3.)  - spCallUrl: {}", spCallUrl);
                 /** Session init OK, redirect to SP (3.) */
@@ -346,7 +336,11 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         return redirectUrl;
     }
 
-    private String finaliseSession(ProxyClient proxyClient, String tid, String pid, PhaseIdService phaseIdBuiltSession, String logTag, String[] keyAndUid) {
+    private String finaliseSession(ProxyClient proxyClient,
+                                   String tid, String pid,
+                                   PhaseIdService phaseIdBuiltSession,
+                                   String logTag,
+                                   String[] keyAndUid) {
         /* This redirect URL is used only if something goes wrong in the session fetch,
          * this URL is null in successful session fetch
          */
@@ -364,7 +358,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
                  * since these values are exposed to public, they could have been tampered
                  */
                 if (phaseIdBuiltSession.validateTidAndPid(tid, pid) &&
-                        phaseIdBuiltSession.verifyPhaseId(pid, tid, stepRedirectFromSP)) {
+                    phaseIdBuiltSession.verifyPhaseId(pid, tid, stepRedirectFromSP)) {
                     phaseId = phaseIdBuiltSession.newPhaseId(tid, stepGetSession);
                 }
             } catch (Exception e) {
@@ -396,9 +390,11 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
 
     /**
      * Purges a session from session cache at Proxy
-     *
+     * @param proxyClient
      * @param tid
      * @param pid
+     * @param phaseIdInitSession
+     * @param phaseIdBuiltSession
      * @param logTag
      * @return Session conversation key
      * @throws Exception
@@ -409,7 +405,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         ProxyMessageDTO proxyMessage;
 
         if (phaseIdInitSession.validateTidAndPid(tid, pid) &&
-                phaseIdInitSession.verifyPhaseId(pid, tid, stepSessionInit)) {
+            phaseIdInitSession.verifyPhaseId(pid, tid, stepSessionInit)) {
             cancelPhaseId = phaseIdBuiltSession.newPhaseId(tid, stepCancel);
         }
         if (cancelPhaseId != null) {
@@ -423,7 +419,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
 
     /**
      * Calls proxy component to initialise a new session
-     * or reauthenticate an existing session
+     * or re-authenticate an existing session
      * and constructs discovery page URL.
      *
      * @param proxyClient
@@ -434,12 +430,17 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
      * @param requestedAuthenticationMethodSet
      * @return
      */
-    private String sessionInit(ProxyClient proxyClient, String uid, String relyingParty, String conversationKey, String logTag, final String requestedAuthenticationMethodSet, String authnRequestId) {
+    private String sessionInit(ProxyClient proxyClient,
+                               String uid,
+                               String relyingParty,
+                               String conversationKey,
+                               String logTag,
+                               final String requestedAuthenticationMethodSet) {
 
         String spCallUrl = null;
         ProxyMessageDTO responseEntity = null;
         try {
-            responseEntity = proxyClient.addSession(relyingParty, uid, conversationKey, requestedAuthenticationMethodSet, logTag, authnRequestId);
+            responseEntity = proxyClient.addSession(relyingParty, uid, conversationKey, requestedAuthenticationMethodSet, logTag);
 
             if (responseEntity != null) {
                 /**
@@ -469,7 +470,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
      * Resolve language based on the following priority: request context, cookie, default value
      *
      * @param profileRequestContext Shibboleth request context
-     * @param request HTTP request containing possible language cookie
+     * @param request               HTTP request containing possible language cookie
      * @return language parameter form message
      */
     private String resolveRequestLanguage(ProfileRequestContext profileRequestContext, HttpServletRequest request) {
@@ -478,28 +479,28 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         String langFromCookie = null;
         if (getCookie(request, LANG_COOKIE_NAME) != null) {
             langFromCookie = getCookie(request, LANG_COOKIE_NAME).getValue();
-        }    
+        }
         if (extensions != null) {
             // look for vetuma-style language parameter for backward compatibility
             String vetumaLang = extensions.getOrderedChildren()
+                .stream()
+                .filter(extension -> extension.getElementQName().getLocalPart().equals("vetuma"))
+                .findFirst()
+                .flatMap(vetumaNode -> vetumaNode.getOrderedChildren()
                     .stream()
-                    .filter(extension -> extension.getElementQName().getLocalPart().equals("vetuma"))
-                    .findFirst()
-                    .flatMap(vetumaNode -> vetumaNode.getOrderedChildren()
-                            .stream()
-                            .filter(lgNode -> lgNode.getElementQName().getLocalPart().equals("LG"))
-                            .findFirst())
-                    .map(langNode -> langNode.getDOM().getFirstChild().getNodeValue())
-                    .orElse(langFromCookie);
-            
+                    .filter(lgNode -> lgNode.getElementQName().getLocalPart().equals("LG"))
+                    .findFirst())
+                .map(langNode -> langNode.getDOM().getFirstChild().getNodeValue())
+                .orElse(langFromCookie);
+
             if (StringUtils.isBlank(vetumaLang)) {
                 vetumaLang = DEFAULT_LANG;
             }
-            logger.debug("Resolved vetuma-style language parameter from authentication request - "+ vetumaLang);
+            logger.debug("Resolved vetuma-style language parameter from authentication request - " + vetumaLang);
             return vetumaLang;
         } else {
             if (StringUtils.isBlank(langFromCookie)) {
-                logger.debug("Could not find language parameter in authentication request, using default language - "+ DEFAULT_LANG);
+                logger.debug("Could not find language parameter in authentication request, using default language - " + DEFAULT_LANG);
                 return DEFAULT_LANG;
             } else {
                 return langFromCookie;
@@ -511,9 +512,9 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
      * Set a browser language cookie based on authentication request language parameter.
      * Set correct security parameters.
      *
-     * @param request HTTP request
+     * @param request  HTTP request
      * @param response HTTP response
-     * @param lang Language
+     * @param lang     Language
      */
     private void setLangCookie(HttpServletRequest request, HttpServletResponse response, String lang) {
         Cookie langCookie = getCookie(request, LANG_COOKIE_NAME);
@@ -529,7 +530,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
     /**
      * Return request cookie by name
      *
-     * @param request HTTP request
+     * @param request    HTTP request
      * @param cookieName Cookie name
      * @return existing request cookie
      */
@@ -567,11 +568,11 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
     private Set<Principal> getExistingActiveAuthenticationClassPrincipals(ProfileRequestContext profileRequestContext) {
         Set<Principal> existingAuthenticationClassPrincipals = new HashSet<>();
         AuthenticationContext ac = profileRequestContext.getSubcontext(AuthenticationContext.class);
-        Map<String, AuthenticationResult> activeResults = ac.getActiveResults();
+        Map<String,AuthenticationResult> activeResults = ac.getActiveResults();
         if (activeResults == null || activeResults.isEmpty()) {
             logger.debug("activeResults is null or empty");
         } else {
-            for (Map.Entry<String, AuthenticationResult> entry : activeResults.entrySet()) {
+            for (Map.Entry<String,AuthenticationResult> entry : activeResults.entrySet()) {
                 Subject activeSubject = entry.getValue().getSubject();
                 Set<Principal> initialPrincipals = activeSubject.getPrincipals();
                 if (initialPrincipals == null) {
@@ -649,7 +650,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         if (timeIntervalInit < 10) {
             return 5;
         } else {
-            return timeIntervalInit-5;
+            return timeIntervalInit - 5;
         }
     }
 

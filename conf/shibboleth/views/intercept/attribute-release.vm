@@ -66,16 +66,16 @@
 #set ($personIdentifier= $attributes.get('personIdentifier'))
 #parse("./include.vm")
 <!doctype html>
-<!--[if lte IE 7]> <html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3 lte_ie9 lte_ie8 lte7"> <![endif]-->
-<!--[if IE 8]> <html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3 lte_ie9 lte_ie8 ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3 lte_ie9 ie9"> <![endif]-->
+<!--[if lte IE 7]> <html lang="fi" itemtype="http://schema.org/WebPage" class="no-js lte_ie9 lte_ie8 lte7"> <![endif]-->
+<!--[if IE 8]> <html lang="fi" itemtype="http://schema.org/WebPage" class="no-js lte_ie9 lte_ie8 ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="fi" itemtype="http://schema.org/WebPage" class="no-js lte_ie9 ie9"> <![endif]-->
 <!--[if gt IE 9]><!-->
-<html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3"><!--<![endif]-->
+<html lang="fi" itemtype="http://schema.org/WebPage" class="no-js"><!--<![endif]-->
 <html>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Tunnistuspalvelu</title>
+    <title>Suomi.fi tunnistaminen</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/resources/stylesheets/style.css">
@@ -125,37 +125,31 @@
             }
         };
     </script>
-
     <!--[if lt IE 9]>
     <script src="/resources/js/vendor/respond.js"></script>
-
     <![endif]-->
 </head>
 <body id="identification-service" onload="setLocalisedUiFromMetadata()">
 <a data-i18n="header__siirry_suoraan_sisaltoon" href="#main" class="visuallyhidden focusable">Siirry suoraan sisältöön</a>
-    #include("header.html")
+#include("header.html")
 <main id="main" role="main" name="main">
-    <div class="main">
+    <div class="main attribute-release-page">
         <div class="container">
             <form id="attribute-form" action="$flowExecutionUrl" method="post">
                 <div class="row">
-                    <div class="col-xs-12 service-top">
-                        <p data-i18n="attribute__otsikko">
-                            Olet tunnistautumassa palveluun
-                        </p>
+                    <div class="col-xs-12 identification-info">
+                        <span data-i18n="attribute__otsikko">Olet tunnistautumassa palveluun</span>
                         #if ($spDisplayNameFi || $spDisplayNameSv || $spDisplayNameEn)
-                            <span class="text-big" id="serviceDisplayName"></span>
+                            <h2 id="serviceDisplayName"></h2>
                         #end
                     </div>
                     <div class="col-xs-12 col-md-7">
-                        <p class="text-notice" data-i18n="attribute__annettavat_tiedot">Tunnistautumisen yhteydessä sinusta välitetään seuraavat tiedot:</p>
-
-                        <div class="box box-solo">
-
+                        <div class="box identification-details">
+                            <p data-i18n="attribute__annettavat_tiedot">Tunnistautumisen yhteydessä sinusta välitetään seuraavat tiedot:</p>
                             <table class="person-details">
                                 #if($idNum)
                                     <tr>
-                                        <td data-i18n="attribute__hetu">Henkilötunnus:</td>
+                                        <td class="strong" data-i18n="attribute__hetu">Henkilötunnus:</td>
                                         <td>
                                             #foreach ($value in $idNum.values)
                                                 <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
@@ -168,7 +162,7 @@
                                 #end
                                 #if($kid)
                                     <tr>
-                                        <td data-i18n="attribute__katsoid">Katso-ID:</td>
+                                        <td class="strong" data-i18n="attribute__katsoid">Katso-ID:</td>
                                         <td>
                                             #foreach ($value in $kid.values)
                                                 <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
@@ -181,7 +175,7 @@
                                 #end
                                 #if($personIdentifier)
                                     <tr>
-                                        <td data-i18n="attribute__personid">Person-ID:</td>
+                                        <td class="strong" data-i18n="attribute__personid">Person-ID:</td>
                                         <td>
                                             #foreach ($value in $personIdentifier.values)
                                                 <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
@@ -194,7 +188,7 @@
                                 #end
                                 #if($dateOfBirth)
                                 <tr>
-                                    <td data-i18n="attribute__syntymaaika">Syntymäaika:</td>
+                                    <td class="strong" data-i18n="attribute__syntymaaika">Syntymäaika:</td>
                                     <td>
                                         #foreach ($value in $dateOfBirth.values)
                                         <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
@@ -208,7 +202,7 @@
                                 #if ($vtjVerified && $vtjVerified.values.get(0).getValue() == "false")
                                     #if($cn)
                                         <tr>
-                                            <td data-i18n="attribute__nimi">Nimi:</td>
+                                            <td class="strong" data-i18n="attribute__nimi">Nimi:</td>
                                             <td>
                                                 #foreach ($value in $cn.values)
                                                     <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
@@ -222,7 +216,7 @@
                                 #end
                                 #if($surname)
                                     <tr>
-                                        <td data-i18n="attribute__sukunimi">Sukunimi:</td>
+                                        <td class="strong" data-i18n="attribute__sukunimi">Sukunimi:</td>
                                         <td>
                                             #foreach ($value in $surname.values)
                                                 <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
@@ -235,7 +229,7 @@
                                 #end
                                 #if($familyName)
                                 <tr>
-                                    <td data-i18n="attribute__sukunimi">Sukunimi:</td>
+                                    <td class="strong" data-i18n="attribute__sukunimi">Sukunimi:</td>
                                     <td>
                                         #foreach ($value in $familyName.values)
                                         <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
@@ -248,7 +242,7 @@
                                 #end
                                 #if($firstName)
                                     <tr>
-                                        <td data-i18n="attribute__etunimet">Etunimet:</td>
+                                        <td class="strong" data-i18n="attribute__etunimet">Etunimet:</td>
                                         <td>
                                             #foreach ($value in $firstName.values)
                                                 <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
@@ -260,7 +254,7 @@
                                     </tr>
                                 #elseif($givenName)
                                 <tr>
-                                    <td data-i18n="attribute__givenname">Etunimi:</td>
+                                    <td class="strong" data-i18n="attribute__givenname">Etunimi:</td>
                                     <td>
                                         #foreach ($value in $givenName.values)
                                         <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
@@ -271,7 +265,7 @@
                                 #end
                                 #if($municipality)
                                     <tr>
-                                        <td data-i18n="attribute__kotikunta">Kotikunta:</td>
+                                        <td class="strong" data-i18n="attribute__kotikunta">Kotikunta:</td>
                                         <td>
                                             #foreach ($value in $municipality.values)
                                                 <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
@@ -285,7 +279,7 @@
 
                                 #if($domesticAddress || $postalCode || $city)
                                     <tr>
-                                        <td data-i18n="attribute__osoite">Lähiosoite:</td>
+                                        <td class="strong" data-i18n="attribute__osoite">Lähiosoite:</td>
                                         <td>
                                             #foreach ($value in $domesticAddress.values)
                                                 <strong>
@@ -319,7 +313,7 @@
                                 #end
                                 #if( !$domesticAddress && ($foreignAddress || $foreignLocalityAndState || $foreignLocalityAndStateClearText) )
                                     <tr>
-                                        <td data-i18n="attribute__osoite">Lähiosoite:</td>
+                                        <td class="strong" data-i18n="attribute__osoite">Lähiosoite:</td>
                                         <td>
                                             #foreach ($value in $foreignAddress.values)
                                                 <strong>
@@ -347,7 +341,7 @@
 
                                 #if($temporaryDomesticAddress || $temporaryCity || $temporaryPostalCode)
                                     <tr>
-                                        <td data-i18n="attribute__tilapainen_osoite">Tilapäinen osoite:</td>
+                                        <td class="strong" data-i18n="attribute__tilapainen_osoite">Tilapäinen osoite:</td>
                                         <td>
                                             #foreach ($value in $temporaryDomesticAddress.values)
                                                 <strong>
@@ -381,7 +375,7 @@
                                 #end
                                 #if($mail)
                                     <tr>
-                                        <td data-i18n="attribute__email">Sähköposti:</td>
+                                        <td class="strong" data-i18n="attribute__email">Sähköposti:</td>
                                         <td>
                                             #foreach ($value in $mail.values)
                                                 <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
@@ -449,40 +443,36 @@
                                 <input id="$finnishCitizenship.id" type="hidden" name="_shib_idp_consentIds"
                                        value="$encoder.encodeForHTML($finnishCitizenship.id)"/>
                             #end
+                            <div class="row attribute-buttons">
+                                <div class="col-xs-12 col-md-8">
+
+                                    <input id="_shib_idp_doNotRememberConsent" type="hidden" name="_shib_idp_consentOptions"
+                                           value="_shib_idp_doNotRememberConsent"/>
+
+                                ## NOTE! These two options will be handled in the future, thath's why they're commented out at the moment!
+                                ##<input id="_shib_idp_rememberConsent" type="hidden" name="_shib_idp_consentOptions" value="_shib_idp_rememberConsent" />
+                                ##<input id="_shib_idp_globalConsent" type="radio" name="_shib_idp_consentOptions" value="_shib_idp_globalConsent" />
+
+                                    <button id="continue-button" type="submit" name="_eventId_proceed" data-i18n="attribute__jatka">Jatka palveluun</button>
+                                    #if($spCounter > 0 && $authenticationResultCounter == 1)
+                                        <a id="reject-link" href="#" class="button-cancel" data-i18n="attribute__keskeytys">Keskeytä siirtyminen</a>
+                                    #else
+                                        <a href="javascript:void(0)" class="button-cancel" onclick="window.location = '$flowExecutionUrl&_eventId_RemoveAuthenticationResult'" data-i18n="attribute__keskeytys">Keskeytä siirtyminen</a>
+                                    #end
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 col-md-8">
-
-                        <input id="_shib_idp_doNotRememberConsent" type="hidden" name="_shib_idp_consentOptions"
-                               value="_shib_idp_doNotRememberConsent"/>
-
-                    ## NOTE! These two options will be handled in the future, thath's why they're commented out at the moment!
-                    ##<input id="_shib_idp_rememberConsent" type="hidden" name="_shib_idp_consentOptions" value="_shib_idp_rememberConsent" />
-                    ##<input id="_shib_idp_globalConsent" type="radio" name="_shib_idp_consentOptions" value="_shib_idp_globalConsent" />
-
-                        <button id="continue-button" type="submit" name="_eventId_proceed" data-i18n="attribute__jatka">Jatka palveluun</button>
-                        #if($spCounter > 0 && $authenticationResultCounter == 1)
-                            <a id="reject-link" href="#" class="secondary-link" data-i18n="attribute__keskeytys">Keskeytä siirtyminen</a>
-                        #else
-                            <a href="javascript:void(0)" onclick="window.location = '$flowExecutionUrl&_eventId_RemoveAuthenticationResult'" data-i18n="attribute__keskeytys">Keskeytä siirtyminen</a>
-                        #end
                     </div>
                 </div>
             </form>
 
             <div class="row">
-                <br/><br/>
-
-                <div id="attribute-info" class="col-xs-12">
-                    <div class="text">
+                <div id="attribute-info" class="col-xs-12 col-md-7">
+                    <div class="sign-in-info">
                         #if ($vtjVerified && $vtjVerified.values.get(0).getValue() == "true")
-                            <p data-i18n="attribute__tietolahde">Henkilötietosi on haettu Väestötietojärjestelmästä.</p>
+                            <p class="small" data-i18n="attribute__tietolahde">Henkilötietosi on haettu Väestötietojärjestelmästä.</p>
                         #end
-                    </div>
-                    <div id="privacy" class="text">
-                        <p><span data-i18n="attribute__tietolahde__rekisteriseloste__kuvaus">Palvelu, johon olet tunnistautumassa, tarvitsee henkilötietosi asiointia varten. Palvelun
+                        <p id="privacy" class="small"><span data-i18n="attribute__tietolahde__rekisteriseloste__kuvaus">Palvelu, johon olet tunnistautumassa, tarvitsee henkilötietosi asiointia varten. Palvelun
                             rekisteriseloste kuvaa tarkemmin tietojen käyttötarkoituksen.</span>
                             <a id="privacyStatement" href="" rel="external" data-i18n="attribute__tietolahde__rekisteriseloste__linkki">Palvelun rekisteriseloste</a></p>
                     </div>
@@ -491,7 +481,7 @@
         </div>
     </div>
 </main>
-    #include("footer.html")
+#include("footer.html")
 <script src="/resources/js/vendor/jquery-1.11.2.min.js"></script>
 <script src="/resources/js/vendor/js.cookie.js"></script>
 <script src="/resources/js/vendor/i18next.min.js"></script>
@@ -511,7 +501,6 @@
 
     domready(function () {
         var language = idpLocalisation.getLanguage();
-        $(".language-selection > li > a[lang=" + language + "]").attr("class", "selected");
         idpLocalisation.localise(language, '#identification-service', '/static/localisation',
                 'suomifi-tunnistaminen-resource-idp_attribute_labels');
     });

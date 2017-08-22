@@ -22,14 +22,12 @@
  */
 package fi.vm.kapa.identification.shibboleth.extattribute;
 
-import javax.xml.namespace.QName;
-
+import net.shibboleth.idp.attribute.resolver.spring.dc.impl.AbstractDataConnectorParser;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.ParserContext;
-
 import org.w3c.dom.Element;
 
-import net.shibboleth.idp.attribute.resolver.spring.dc.impl.AbstractDataConnectorParser;
+import javax.xml.namespace.QName;
 
 public class ShibbolethExtAttributeConnectorParser extends AbstractDataConnectorParser {
 

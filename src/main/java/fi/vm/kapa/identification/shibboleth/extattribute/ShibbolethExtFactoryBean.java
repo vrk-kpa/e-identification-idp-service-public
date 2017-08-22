@@ -57,5 +57,5 @@ public class ShibbolethExtFactoryBean extends AbstractComponentAwareFactoryBean 
     public void setProxySessionMismatchAttribute(String proxySessionMismatchAttribute) {
         this.proxySessionMismatchAttribute = proxySessionMismatchAttribute;
     }
-    
+
 }

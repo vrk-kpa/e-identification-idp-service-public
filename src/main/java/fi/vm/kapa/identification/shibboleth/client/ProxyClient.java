@@ -25,7 +25,6 @@ package fi.vm.kapa.identification.shibboleth.client;
 import fi.vm.kapa.identification.dto.ProxyMessageDTO;
 import fi.vm.kapa.identification.dto.SessionAttributeDTO;
 import fi.vm.kapa.identification.resource.ProxyResource;
-
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.slf4j.Logger;
@@ -43,15 +42,18 @@ public class ProxyClient {
 
     public ProxyClient(String proxyURI) {
         Client client = ClientBuilder.newClient()
-                .register(JacksonFeature.class);
+            .register(JacksonFeature.class);
         WebTarget target = client.target(proxyURI);
         this.proxyResource = WebResourceFactory.newResource(ProxyResource.class, target);
     }
 
-    public ProxyMessageDTO addSession(String relyingParty, String uid,
-                                      String key, String authMethodReqStr, String logTag, String authnRequestId) {
-        logger.debug("Add new session - relying party: {}, uid: {}, conversation key: {}, authentication methods: {}, tag: {}, authnRequestId: {}", relyingParty, uid, key, authMethodReqStr, logTag, authnRequestId);
-        return proxyResource.fromIdPInitSession(relyingParty, uid, key, authMethodReqStr, logTag, authnRequestId);
+    public ProxyMessageDTO addSession(String relyingParty,
+                                      String uid,
+                                      String key,
+                                      String authMethodReqStr,
+                                      String logTag) {
+        logger.debug("Add new session - relying party: {}, uid: {}, conversation key: {}, authentication methods: {}, tag: {}", relyingParty, uid, key, authMethodReqStr, logTag);
+        return proxyResource.fromIdPInitSession(relyingParty, uid, key, authMethodReqStr, logTag);
     }
 
     public ProxyMessageDTO getSessionByTokenId(String tokenId, String phaseId, String logTag) {
@@ -64,8 +66,8 @@ public class ProxyClient {
         return proxyResource.fromIdPPurgeSession(tokenId, phaseId, logTag);
     }
 
-    public SessionAttributeDTO getSessionAttributes(String uid, String authMethodOid, String relyingParty) {
-        logger.debug("Fetch session attributes - uid: {}, authentication method: {}, relying party: {}", uid, authMethodOid, relyingParty);
-        return proxyResource.getSessionAttributes(uid, authMethodOid, relyingParty);
+    public SessionAttributeDTO getSessionAttributes(String uid, String authMethodOid, String relyingParty, boolean tokenRequired, String authnRequestId) {
+        logger.debug("Fetch session attributes - uid: {}, authentication method: {}, relying party: {}, tokenRequired: {}, authnRequestId: {}", uid, authMethodOid, relyingParty, tokenRequired, authnRequestId);
+        return proxyResource.getSessionAttributes(uid, authMethodOid, relyingParty, tokenRequired, authnRequestId);
     }
 }

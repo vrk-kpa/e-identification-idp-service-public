@@ -26,50 +26,68 @@
 #parse("./include.vm")
 #if ($logoutContext and !$logoutContext.getSessionMap().isEmpty())
 <div class="row">
-     <div class="col-xs-12 service-top">
-         <p><span data-i18n="logout__uloskirjautunut">Olet kirjautunut ulos palvelusta</span><br />
-            #if ($spDisplayNameFi || $spDisplayNameSv || $spDisplayNameEn)
-                <span class="text-big" id="serviceDisplayName"></span>
-            #end
-            <span id="serviceDisplayNameFi" style="visibility: hidden">$spDisplayNameFi</span>
-            <span id="serviceDisplayNameSv" style="visibility: hidden">$spDisplayNameSv</span>
-            <span id="serviceDisplayNameEn" style="visibility: hidden">$spDisplayNameEn</span>
-            <br />
-         </p>
-    </div>    
-    <div class="col-xs-12 service-top">
+     <div class="col-xs-12 identification-info">
+         <span data-i18n="logout__uloskirjautunut">Olet kirjautunut ulos palvelusta</span>
+         #if ($spDisplayNameFi || $spDisplayNameSv || $spDisplayNameEn)
+             <h2 id="serviceDisplayName"></h2>
+         #end
+         <span id="serviceDisplayNameFi" style="display: none;">$spDisplayNameFi</span>
+         <span id="serviceDisplayNameSv" style="display: none;">$spDisplayNameSv</span>
+         <span id="serviceDisplayNameEn" style="display: none;">$spDisplayNameEn</span>
+     </div>
+
+    <div class="col-xs-12">
         <p data-i18n="logout__uloskirjautunut_kaikista">Olet nyt kirjautunut ulos kaikista palveluista.</p>
     </div>
-<div class="col-xs-12 col-md-10 col-lg-8">
-    <div class="box box-solo">
-        <table class="service-details">
 
-            #foreach ($sp in $logoutContext.getSessionMap().keySet())
-                #set ($rpCtx = $multiRPContext.getRelyingPartyContextById($sp))
-                #if ($rpCtx)
-                    #set ($rpUIContext = $rpCtx.getSubcontext("net.shibboleth.idp.ui.context.RelyingPartyUIContext"))
-                #end
-                <tr id="result_$codecUtil.hex($sp.getBytes())">
-                    #if ($rpUIContext and $rpUIContext.getServiceName())
-                        <td>$htmlEncoder.encodeForHTML($rpUIContext.getServiceName())</td>
-                    #else
-                        <td>$htmlEncoder.encodeForHTML($sp)</td>
-                    #end
-                    <td id="logging-item"><span class="logging-out" data-i18n="logout__sessiot__uloskirjautuminen__menossa">Kirjaudutaan ulos...</span></td>
-                </tr>
-            #end
-        </table>
+    <div class="col-xs-12 col-md-10">
+      <div class="box logout-details">
+          <table class="service-details">
+
+              #foreach ($sp in $logoutContext.getSessionMap().keySet())
+                  #set ($rpCtx = $multiRPContext.getRelyingPartyContextById($sp))
+                  #if ($rpCtx)
+                      #set ($rpUIContext = $rpCtx.getSubcontext("net.shibboleth.idp.ui.context.RelyingPartyUIContext"))
+                      
+                  #end
+                  <tr id="result_$codecUtil.hex($sp.getBytes())">
+                      #if ($rpUIContext and $rpUIContext.getServiceName())
+                        <td class="strong" >
+                            #set ($browserLanguages = [])
+                            #set ($discard = $browserLanguages.add("fi"))
+                            #set ($rpUIContext = $rpUIContext.setBrowserLanguages($browserLanguages))                        
+                            <span class="localizationfi" style="display: none;">$htmlEncoder.encodeForHTML($rpUIContext.getServiceName())</span>
+                            
+                            #set ($browserLanguages = [])
+                            #set ($discard = $browserLanguages.add("sv"))
+                            #set ($rpUIContext = $rpUIContext.setBrowserLanguages($browserLanguages))
+                            <span class="localizationsv" style="display: none;">$htmlEncoder.encodeForHTML($rpUIContext.getServiceName())</span>
+                            
+                            #set ($browserLanguages = [])
+                            #set ($discard = $browserLanguages.add("en"))
+                            #set ($rpUIContext = $rpUIContext.setBrowserLanguages($browserLanguages))
+                            <span class="localizationen" style="display: none;">$htmlEncoder.encodeForHTML($rpUIContext.getServiceName())</span>
+                        </td>
+                      #else
+                          <td class="strong">$htmlEncoder.encodeForHTML($sp)</td>
+                      #end
+                      <td id="logging-item"><span class="logging-out" data-i18n="logout__sessiot__uloskirjautuminen__menossa">Kirjaudutaan ulos...</span></td>
+                  </tr>
+              #end
+          </table>
+      </div>
     </div>
-</div>
 </div>
 <div class="row">
     <div class="col-xs-12 col-md-8">
         <button id="logout-button" class="disabled" disabled="true" onclick="window.location = '$flowExecutionUrl&_eventId=proceed'" data-i18n="logout__sessiot__uloskirjautuminen__menossa">
             Kirjaudutaan ulos...
         </button>
-        <a href="javascript:void(0)" onclick="window.location = '$flowExecutionUrl&_eventId=proceed'">
-            <span data-i18n="logout__palaa">Palaa palveluun</span>&nbsp;<span id="serviceDisplayNameReturn"></span>
-        </a>
+        <div class="row">
+            <a href="javascript:void(0)" onclick="window.location = '$flowExecutionUrl&_eventId=proceed'" class="go-back">
+                <span data-i18n="logout__palaa">Palaa palveluun</span>&nbsp;<span id="serviceDisplayNameReturn"></span>
+            </a>
+        </div>
     </div>
 </div>
 <script src="/resources/js/vendor/jquery-1.11.2.min.js"></script>

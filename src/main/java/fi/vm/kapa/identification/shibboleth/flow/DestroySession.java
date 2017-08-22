@@ -23,16 +23,7 @@
 
 package fi.vm.kapa.identification.shibboleth.flow;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.opensaml.profile.action.EventIds;
-import org.opensaml.profile.context.ProfileRequestContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Function;
-
 import net.shibboleth.idp.profile.AbstractProfileAction;
 import net.shibboleth.idp.profile.ActionSupport;
 import net.shibboleth.idp.session.SessionException;
@@ -41,56 +32,77 @@ import net.shibboleth.idp.session.context.SessionContext;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
+import org.opensaml.profile.action.EventIds;
+import org.opensaml.profile.context.ProfileRequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @SuppressWarnings("rawtypes")
 public class DestroySession extends AbstractProfileAction {
-    
-    /** Class logger. */
+
+    /**
+     * Class logger.
+     */
     @Nonnull
     private final Logger log = LoggerFactory.getLogger(DestroySession.class);
-    
-    /** SessionManager. */
+
+    /**
+     * SessionManager.
+     */
     @Nonnull
     private SessionManager sessionManager;
-   
-    /** Lookup function for SessionContext. */
-    @Nonnull private Function<ProfileRequestContext,SessionContext> sessionContextLookupStrategy;
-    
-    /** SessionContext to operate on. */
-    @Nullable private SessionContext sessionCtx;
-    
+
+    /**
+     * Lookup function for SessionContext.
+     */
+    @Nonnull
+    private Function<ProfileRequestContext,SessionContext> sessionContextLookupStrategy;
+
+    /**
+     * SessionContext to operate on.
+     */
+    @Nullable
+    private SessionContext sessionCtx;
+
     public void setSessionManager(@Nonnull final SessionManager manager) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
-        
+
         sessionManager = Constraint.isNotNull(manager, "SessionManager cannot be null");
     }
-    
+
     public void setSessionContextLookupStrategy(
-            @Nonnull final Function<ProfileRequestContext,SessionContext> strategy) {
+        @Nonnull final Function<ProfileRequestContext,SessionContext> strategy) {
         ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
-        
+
         sessionContextLookupStrategy = Constraint.isNotNull(strategy,
-                "SessionContext lookup strategy cannot be null");
+            "SessionContext lookup strategy cannot be null");
     }
-    
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void doInitialize() throws ComponentInitializationException {
         super.doInitialize();
-        
+
         if (sessionManager == null) {
             throw new ComponentInitializationException("SessionManager cannot be null");
         }
     }
 
-    
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
         log.debug("Entering DestroyAuthResult doExecute");
-        
+
         sessionCtx = profileRequestContext.getSubcontext(SessionContext.class);
-        
+
         try {
             sessionManager.destroySession(sessionCtx.getIdPSession().getId(), true);
         } catch (SessionException e) {
@@ -98,5 +110,5 @@ public class DestroySession extends AbstractProfileAction {
             ActionSupport.buildEvent(profileRequestContext, EventIds.IO_ERROR);
         }
     }
-    
+
 }

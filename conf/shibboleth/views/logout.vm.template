@@ -16,11 +16,11 @@
 ##
 #parse("include.vm")
 <!doctype html>
-<!--[if lte IE 7]> <html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3 lte_ie9 lte_ie8 lte7"> <![endif]-->
-<!--[if IE 8]> <html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3 lte_ie9 lte_ie8 ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3 lte_ie9 ie9"> <![endif]-->
+<!--[if lte IE 7]> <html lang="fi" itemtype="http://schema.org/WebPage" class="no-js lte_ie9 lte_ie8 lte7"> <![endif]-->
+<!--[if IE 8]> <html lang="fi" itemtype="http://schema.org/WebPage" class="no-js lte_ie9 lte_ie8 ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="fi" itemtype="http://schema.org/WebPage" class="no-js lte_ie9 ie9"> <![endif]-->
 <!--[if gt IE 9]><!-->
-<html lang="fi" itemtype="http://schema.org/WebPage" data-text-size="3" class="no-js text-size-3"><!--<![endif]-->
+<html lang="fi" itemtype="http://schema.org/WebPage" class="no-js"><!--<![endif]-->
 <html>
 <head>
     <meta charset="utf-8">
@@ -41,22 +41,18 @@
 <a data-i18n="header__siirry_suoraan_sisaltoon" href="#main" class="visuallyhidden focusable">Siirry suoraan sisältöön</a>
 #include("header.html")
 <main id="main" role="main" name="main">
-    <div class="main">
+    <div class="main idp-logout-page">
         <div class="container">
           #if ( $logoutContext and !$logoutContext.getSessionMap().isEmpty() )
              <div class="row">
-                <div class="col-xs-12 service-top">
-                    <p data-i18n="logout__uloskirjautunut">Olet kirjautunut ulos palvelusta<br />
-                        <span class="text-big"></span><br />
-                    </p>
-                </div>    
-                <div class="col-xs-12 service-top">
-                    <div class="text">
-                        <p data-i18n="logout__sessiot__otsikko">Olet vielä kirjautuneena alla lueteltuihin palveluihin. Kirjaudu ulos kaikista tai siirry valitsemaasi palveluun.</p>
-                    </div>    
+                <div class="col-xs-12 ">
+                    <p data-i18n="logout__uloskirjautunut">Olet kirjautunut ulos palvelusta</p>
                 </div>
-                <div class="col-xs-12 col-md-10 col-lg-8">
-                  <div class="box box-solo">
+                <div class="col-xs-12">
+                    <p data-i18n="logout__sessiot__otsikko">Olet vielä kirjautuneena alla lueteltuihin palveluihin. Kirjaudu ulos kaikista tai siirry valitsemaasi palveluun.</p>
+                </div>
+                <div class="col-xs-12 col-md-10">
+                  <div class="box logout-details">
                     <table class="service-details">
                       #foreach ($sp in $logoutContext.getSessionMap().keySet())
                       <tr>
@@ -66,11 +62,11 @@
                                     "net.shibboleth.idp.ui.context.RelyingPartyUIContext"))
                           #end
                           #if ($rpUIContext and $rpUIContext.getServiceName())
-                                <td>$encoder.encodeForHTML($rpUIContext.getServiceName())</td>
+                                <td class="strong">$encoder.encodeForHTML($rpUIContext.getServiceName())</td>
                                 #set ($organizationUrl=$rpUIContext.getOrganizationURL())
                                 <td><a href="$organizationUrl" data-i18n="logout__sessiot__siirry_palveluun">Siirry palveluun</a></td>
                           #else
-                                <td>$encoder.encodeForHTML($sp)</td>
+                                <td class="strong">$encoder.encodeForHTML($sp)</td>
                           #end
                       </tr>
                       #end
@@ -82,17 +78,18 @@
               <form id="propagate_form" method="POST" action="$flowExecutionUrl">
                 <div class="col-xs-12 col-md-8">
                   <button id="propagate_yes" type="submit" name="_eventId" value="propagate" data-i18n="logout__lomake__uloskirjaudu">Kirjaudu ulos kaikista</button>
-                  <!--<a class="secondary-link" href="" id="reject-link">Peruuta ja palaa palveluun</a>-->
+                  <!--<a class="cancel-button" href="" id="reject-link">Peruuta ja palaa palveluun</a>-->
                 </div>
               </form>
             </div>
              <br/>
             <div class="row">
                 <div class="col-xs-12">
-                    <div class="text">
+                    <div class="sign-in-info">
                        <p data-i18n="logout__info">Suomi.fi-tunnistaminen on julkishallinnon yhteinen tunnistuspalvelu, jonka avulla voit tunnistautua useaan eri palveluun yhdellä tunnistautumisella.</p>
                     </div>
                 </div>
+            </div>
             </div>
             #if ( $profileRequestContext.getSubcontext( "fi.vm.kapa.identification.shibboleth.context.KatsoContext" ) )
                 <iframe style="display:none" src="{{ katso_global_logout_url }}">
@@ -129,7 +126,6 @@
     }
     domready(function () {
         var language = idpLocalisation.getLanguage();
-        $(".language-selection > li > a[lang=" + language + "]").attr("class", "selected");
         idpLocalisation.localise(language, '#identification-service', '/static/localisation',
         'suomifi-tunnistaminen-resource-idp_uloskirjautuminen_labels');
     });

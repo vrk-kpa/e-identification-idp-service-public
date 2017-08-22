@@ -30,6 +30,6 @@ public class ShibbolethExtNamespaceHandler extends BaseSpringNamespaceHandler {
 
     public void init() {
         registerBeanDefinitionParser(ShibbolethExtAttributeConnectorParser.SCHEMA_NAME,
-                new ShibbolethExtAttributeConnectorParser());
+            new ShibbolethExtAttributeConnectorParser());
     }
 }

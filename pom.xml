@@ -40,8 +40,9 @@
         <servlet.version>3.0.1</servlet.version>
         <slf4j.version>1.7.10</slf4j.version>
         <shibboleth.version>3.2.1</shibboleth.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.9</junit.version>
         <mockito.version>1.10.19</mockito.version>
+        <powermock.version>1.6.6</powermock.version>
         <docker.image.tag></docker.image.tag>
         <docker.image.prefix>dev-docker-registry.kapa.ware.fi</docker.image.prefix>
         <spotify-docker.version>0.3.1</spotify-docker.version>
@@ -249,6 +250,21 @@
             <version>9.3.13.v20161014</version>
             <scope>test</scope>
         </dependency>
+        
+        <!-- Powermock -->
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
 
     </dependencies>
 
