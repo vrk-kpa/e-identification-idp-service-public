@@ -86,7 +86,7 @@
 
                     <div class="logo-row">
                         <h1 class="site-logo">
-                            Suomi.fi-tunnistaminen
+                            Suomi.fi-tunnistus
                         </h1>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
             <div id="footer-logo">
                 <img src="/resources/img/footer-logo2.svg" alt="Väestörekisterikeskus logo">
             </div>
-            <p>Suomi.fi-tunnistamisesta vastaa <a id="kansalaisen_palvelusta_vastaa_url" target="_blank" href="http://vrk.fi">Väestörekisterikeskus</a></p>
+            <p>Suomi.fi-tunnistuksesta vastaa <a id="kansalaisen_palvelusta_vastaa_url" target="_blank" href="http://vrk.fi">Väestörekisterikeskus</a></p>
             <ul class="link-list">
                 <li><a target="_blank" href="/info/tietoapalvelusta/">Tietoa tunnistautumisesta</a></li>
                 <li><a target="_blank" href="/info/tietosuojaseloste/">Henkilötietolain mukainen tietosuojaseloste</a>
