@@ -4,11 +4,11 @@
       abstract="true" parent="saml.abstract">
 
     <!-- Bootstrap action has to be at the "top" of the flow after this flow prepends itself to parent. -->
-    
+
     <action-state id="InitializeProfileRequestContext">
         <evaluate expression="InitializeProfileRequestContext" />
         <evaluate expression="'proceed'" />
-        
+
         <transition on="proceed" to="DecodeMessage" />
     </action-state>
 
@@ -17,16 +17,16 @@
     Response handling is just translating the status of the LogoutResponse into a JSON
     result compatible with the logout propagation flow contract.
     -->
-    
+
     <!--
     We splice into the parent flow by checking for a LogoutResponse after the inbound
     message subflow runs, to bypass the rest of the parent flow. Anything else passes
-    control back to the next parent state. 
+    control back to the next parent state.
     -->
     <subflow-state id="DoInboundInterceptSubflow">
         <transition on="proceed" to="CheckLogoutResponse" />
     </subflow-state>
-    
+
     <decision-state id="CheckLogoutResponse">
         <!-- If parent DoInboundInterceptSubflow transition changes on 'proceed', the else clause needs to also change. -->
         <if test="opensamlProfileRequestContext.getInboundMessageContext().getMessage() instanceof T(org.opensaml.saml.saml2.core.LogoutResponse)"
@@ -34,7 +34,7 @@
     </decision-state>
 
     <!-- LogoutRequest handling starts by loading client storage if needed. -->
-        
+
     <action-state id="DoProfileWork">
         <evaluate expression="PopulateClientStorageLoadContext" />
         <evaluate expression="'proceed'" />
@@ -42,7 +42,7 @@
         <transition on="proceed" to="ClientStorageLoad" />
         <transition on="NoLoadNeeded" to="DoKatsoCheck" />
     </action-state>
-    
+
     <subflow-state id="ClientStorageLoad" subflow="client-storage/read">
         <input name="calledAsSubflow" value="true" />
         <transition on="proceed" to="DoKatsoCheck"/>
@@ -51,15 +51,15 @@
     <action-state id="DoKatsoCheck">
         <evaluate expression="KatsoCheck" />
         <evaluate expression="'proceed'" />
-        
+
         <transition on="proceed" to="DoLogoutRequest" />
     </action-state>
-	
+
 
     <action-state id="DoLogoutRequest">
         <evaluate expression="ProcessLogoutRequest" />
         <evaluate expression="'proceed'" />
-        
+
         <transition on="proceed" to="PopulateClientStorageSaveContext" />
     </action-state>
 
@@ -71,7 +71,7 @@
         <transition on="proceed" to="ClientStorageSave" />
         <transition on="NoSaveNeeded" to="CompleteLogout" />
     </action-state>
-    
+
     <subflow-state id="ClientStorageSave" subflow="client-storage/write">
         <input name="calledAsSubflow" value="true" />
         <transition on="proceed" to="CompleteLogout"/>
@@ -82,42 +82,36 @@
         <evaluate expression="LogoutPopulateAuditContext" />
         <evaluate expression="PopulateMultiRPContextFromLogoutContext" />
         <evaluate expression="'proceed'" />
-        
+
         <transition on="proceed" to="NextRelyingPartyContext" />
     </action-state>
 
     <decision-state id="NextRelyingPartyContext">
         <if test="opensamlProfileRequestContext.getSubcontext(T(net.shibboleth.idp.profile.context.MultiRelyingPartyContext), true).getRelyingPartyContextIterator().hasNext()"
-            then="SetRPUIInformation" else="LogoutView" />
+            then="SetRPUIInformation" else="SelectLogout" />
     </decision-state>
-    
+
     <action-state id="SetRPUIInformation">
         <on-entry>
             <evaluate expression="opensamlProfileRequestContext.getSubcontext(T(net.shibboleth.idp.profile.context.MultiRelyingPartyContext)).getRelyingPartyContextIterator().next()" />
         </on-entry>
         <evaluate expression="SetRPUIInformation" />
         <evaluate expression="'proceed'" />
-        
+
         <transition on="proceed" to="NextRelyingPartyContext" />
     </action-state>
 
-    <view-state id="LogoutView" view="logout">
-        <on-render>
-            <evaluate expression="environment" result="viewScope.environment" />
-            <evaluate expression="opensamlProfileRequestContext" result="viewScope.profileRequestContext" />
-            <evaluate expression="opensamlProfileRequestContext.getSubcontext(T(net.shibboleth.idp.session.context.LogoutContext))" result="viewScope.logoutContext" />
-            <evaluate expression="opensamlProfileRequestContext.getSubcontext(T(net.shibboleth.idp.profile.context.MultiRelyingPartyContext))" result="viewScope.multiRPContext" />
-            <evaluate expression="T(net.shibboleth.utilities.java.support.codec.HTMLEncoder)" result="viewScope.encoder" />
-            <evaluate expression="flowRequestContext.getExternalContext().getNativeRequest()" result="viewScope.request" />
-            <evaluate expression="flowRequestContext.getExternalContext().getNativeResponse()" result="viewScope.response" />
-            <evaluate expression="flowRequestContext.getActiveFlow().getApplicationContext().containsBean('shibboleth.CustomViewContext') ? flowRequestContext.getActiveFlow().getApplicationContext().getBean('shibboleth.CustomViewContext') : null" result="viewScope.custom" />
-        </on-render>
-        
-        <transition on="proceed" to="CheckAsync" />
-        <transition on="propagate" to="LogoutPropagateView" />
-        <transition on="end" to="LogoutCompleteView" />
-    </view-state>
-    
+    <decision-state id="SelectLogout">
+        <if test="opensamlProfileRequestContext.getSubcontext(T(net.shibboleth.idp.session.context.LogoutContext)).getSessionMap().isEmpty()"
+            then="KatsoLogoutCheck" else="LogoutPropagateView" />
+    </decision-state>
+
+    <decision-state id="KatsoLogoutCheck">
+        <if test="opensamlProfileRequestContext.getSubcontext( 'fi.vm.kapa.identification.shibboleth.context.KatsoContext' ) != null"
+            then="LogoutPropagateView" else="CheckAsync" />
+    </decision-state>
+
+
     <view-state id="LogoutPropagateView" view="logout-propagate">
         <on-render>
             <evaluate expression="SaveLogoutContext" />
@@ -133,39 +127,25 @@
             <evaluate expression="flowRequestContext.getActiveFlow().getApplicationContext().getBean('shibboleth.LogoutPropagationFlowSelector')" result="viewScope.flowSelector" />
             <evaluate expression="flowRequestContext.getActiveFlow().getApplicationContext().containsBean('shibboleth.CustomViewContext') ? flowRequestContext.getActiveFlow().getApplicationContext().getBean('shibboleth.CustomViewContext') : null" result="viewScope.custom" />
         </on-render>
-        
-        <transition on="proceed" to="CheckAsync" />
-    </view-state>
-    <view-state id="LogoutCompleteView" view="logout-complete">
-        <on-render>
-            <evaluate expression="environment" result="viewScope.environment" />
-            <evaluate expression="opensamlProfileRequestContext" result="viewScope.profileRequestContext" />
-            <evaluate expression="opensamlProfileRequestContext.getSubcontext(T(net.shibboleth.idp.session.context.LogoutContext))" result="viewScope.logoutContext" />
-            <evaluate expression="opensamlProfileRequestContext.getSubcontext(T(net.shibboleth.idp.profile.context.MultiRelyingPartyContext))" result="viewScope.multiRPContext" />
-            <evaluate expression="T(net.shibboleth.utilities.java.support.codec.HTMLEncoder)" result="viewScope.encoder" />
-            <evaluate expression="flowRequestContext.getExternalContext().getNativeRequest()" result="viewScope.request" />
-            <evaluate expression="flowRequestContext.getExternalContext().getNativeResponse()" result="viewScope.response" />
-            <evaluate expression="flowRequestContext.getActiveFlow().getApplicationContext().containsBean('shibboleth.CustomViewContext') ? flowRequestContext.getActiveFlow().getApplicationContext().getBean('shibboleth.CustomViewContext') : null" result="viewScope.custom" />
-        </on-render>
 
         <transition on="proceed" to="CheckAsync" />
     </view-state>
-    
+
     <decision-state id="CheckAsync">
         <if test="opensamlProfileRequestContext.getInboundMessageContext().getMessage().getExtensions() == null or opensamlProfileRequestContext.getInboundMessageContext().getMessage().getExtensions().getUnknownXMLObjects(T(org.opensaml.saml.ext.saml2aslo.Asynchronous).DEFAULT_ELEMENT_NAME).isEmpty()"
             then="BuildResponse" else="AsyncLogoutView" />
     </decision-state>
-    
+
     <action-state id="BuildResponse">
         <evaluate expression="AddLogoutResponse" />
         <evaluate expression="AddInResponseToToResponse" />
         <evaluate expression="PostResponsePopulateAuditContext" />
-        
+
         <evaluate expression="'proceed'" />
-        
+
         <transition on="proceed" to="ReturnToParentFlow" />
     </action-state>
-    
+
     <!-- Error Response Generation -->
 
     <decision-state id="HandleError">
@@ -185,15 +165,15 @@
         <evaluate expression="AddStatusToResponse" />
         <evaluate expression="PostResponsePopulateAuditContext" />
         <evaluate expression="'proceed'" />
-        
+
         <transition on="proceed" to="ReturnToParentFlow" />
         <transition to="HandleErrorWithView" />
-        
+
         <exception-handler bean="RethrowingFlowExecutionExceptionHandler"/>
     </action-state>
 
     <!-- Special view machinery, and writes audit log unconditionally. -->
-     
+
     <end-state id="AsyncLogoutView" view="logout/saml-async">
         <on-entry>
             <evaluate expression="ErrorViewPopulateAuditContext" />
@@ -226,4 +206,3 @@
     <bean-import resource="slo-front-abstract-beans.xml" />
 
 </flow>
-    

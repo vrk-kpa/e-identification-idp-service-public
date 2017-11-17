@@ -24,16 +24,15 @@
 ## element for the relying party of their session.
 ##
 #parse("./include.vm")
-#if ($logoutContext and !$logoutContext.getSessionMap().isEmpty())
 <div class="row">
      <div class="col-xs-12 identification-info">
          <span data-i18n="logout__uloskirjautunut">Olet kirjautunut ulos palvelusta</span>
          #if ($spDisplayNameFi || $spDisplayNameSv || $spDisplayNameEn)
              <h2 id="serviceDisplayName"></h2>
          #end
-         <span id="serviceDisplayNameFi" style="display: none;">$spDisplayNameFi</span>
-         <span id="serviceDisplayNameSv" style="display: none;">$spDisplayNameSv</span>
-         <span id="serviceDisplayNameEn" style="display: none;">$spDisplayNameEn</span>
+         <span id="serviceDisplayNameFi" class="visuallyhidden">$spDisplayNameFi</span>
+         <span id="serviceDisplayNameSv" class="visuallyhidden">$spDisplayNameSv</span>
+         <span id="serviceDisplayNameEn" class="visuallyhidden">$spDisplayNameEn</span>
      </div>
 
     <div class="col-xs-12">
@@ -50,7 +49,7 @@
                       #set ($rpUIContext = $rpCtx.getSubcontext("net.shibboleth.idp.ui.context.RelyingPartyUIContext"))
                       
                   #end
-                  <tr id="result_$codecUtil.hex($sp.getBytes())">
+                  <tr id="result_$codecUtil.hex($sp.getBytes())" class="spresult">
                       #if ($rpUIContext and $rpUIContext.getServiceName())
                         <td class="strong" >
                             #set ($browserLanguages = [])
@@ -80,88 +79,25 @@
 </div>
 <div class="row">
     <div class="col-xs-12 col-md-8">
-        <button id="logout-button" class="disabled" disabled="true" onclick="window.location = '$flowExecutionUrl&_eventId=proceed'" data-i18n="logout__sessiot__uloskirjautuminen__menossa">
+        <button id="logout-button" class="disabled" link-target="$flowExecutionUrl&_eventId=proceed" disabled="true" data-i18n="logout__sessiot__uloskirjautuminen__menossa">
             Kirjaudutaan ulos...
         </button>
         <div class="row">
-            <a href="javascript:void(0)" onclick="window.location = '$flowExecutionUrl&_eventId=proceed'" class="go-back">
+            <a id="logout-back-link" href="javascript:void(0)" link-target="$flowExecutionUrl&_eventId=proceed" class="go-back">
                 <span data-i18n="logout__palaa">Palaa palveluun</span>&nbsp;<span id="serviceDisplayNameReturn"></span>
             </a>
         </div>
     </div>
 </div>
 <script src="/resources/js/vendor/jquery-1.11.2.min.js"></script>
-<script>
-    <!--
-
-    function isLogoutFinished() {
-        return $('span.logging-out').length == 0;
-    }
-
-    function check_status() {
-        // Check every property of the object.
-        for (flag in this) {
-            if (!this[flag]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // Associative array keyed by SP name. Entries are an array keyed by session key.
-    var sessionTracker = new Object();
-        #foreach ($sp in $logoutContext.getSessionMap().keySet())
-        spTracker = new Object();
-        spTracker.status = check_status;
-        sessionTracker['result_$codecUtil.hex($sp.getBytes())'] = spTracker;
-        #end
-
-    function onLoad(src, targetRow, trackerId, sessionKey) {
-        try {
-            var content = src.contents().text();
-            if (content && jQuery.parseJSON(content).result == "Success") {
-                sessionTracker[trackerId]['_' + sessionKey] = true;
-            } else {
-                sessionTracker[trackerId]['_' + sessionKey] = false;
-            }
-        } catch (e) {
-            sessionTracker[trackerId]['_' + sessionKey] = false;
-        }
-        targetRow.removeClass("success failure");
-        if (sessionTracker[trackerId].status()) {
-            $(targetRow).find("#logging-item span").removeClass("logging-out");
-            $(targetRow).find("#logging-item span").addClass("logged-out").text(idpLocalisation.translate("logout__sessiot__uloskirjautuminen__valmis"));
-            targetRow.addClass("service-logged-out");
-        } else {
-            // handle failure
-        }
-        if (typeof(Storage) !== "undefined") {
-            var url = sessionStorage.getItem(sessionKey);
-            if (url != null) {
-                sessionStorage.removeItem(sessionKey);
-                setTimeout(function () {
-                    src.prop("src", url)
-                }, 1500);
-            }
-        }
-        if (isLogoutFinished()) {
-            $('#logout-button').prop("disabled", false);
-            $('#logout-button').removeClass("disabled");
-            $('#logout-button').hide();
-            $('#reject-link').show();
-        } else {
-            $('#reject-link').hide();
-        }
-    }
-    // -->
-</script>
     #foreach ($entry in $logoutContext.getKeyedSessionMap().entrySet())
         #if ($flowSelector.apply($entry.getValue()))
             #set ($trackerId = "result_$codecUtil.hex($entry.getValue().getId().getBytes())")
         <iframe id="sender_$codecUtil.hex($entry.getKey().getBytes())"
                 src="$request.contextPath/profile/PropagateLogout?SessionKey=$urlEncoder.encode($entry.getKey())"
-                style="display:none"
-                onload="onLoad($(this), $('#$trackerId'), '$trackerId', '$entry.getKey()')"></iframe>
+                class="visuallyhidden addonload"
+                entrykey="$entry.getKey()"
+                trackerid="$trackerId"></iframe>
         #end
     #end
-#end
+<script src="/resources/js/propagate.js"></script>

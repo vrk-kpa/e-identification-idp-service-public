@@ -37,7 +37,7 @@
     <link href="stylesheets/ie8.css" rel="stylesheet" type="text/css" />
     <![endif]-->
 </head>
-<body id="identification-service" onload="document.getElementById('propagate_yes').click();">
+<body id="identification-service">
 <a data-i18n="header__siirry_suoraan_sisaltoon" href="#main" class="visuallyhidden focusable">Siirry suoraan sisältöön</a>
 #include("header.html")
 <main id="main" role="main" name="main">
@@ -92,19 +92,25 @@
             </div>
             </div>
             #if ( $profileRequestContext.getSubcontext( "fi.vm.kapa.identification.shibboleth.context.KatsoContext" ) )
-                <iframe style="display:none" src="{{ katso_global_logout_url }}">
+                <iframe class="visuallyhidden" src="{{ katso_global_logout_url }}"></iframe>
             #end
            #else
             <!-- If SAML logout with no extra work to do, complete the flow by redirecting to logout page. -->
+               <a id="proceed-link" class="display-none" href="$flowExecutionUrl&_eventId=proceed"></a>
                #if ( $profileRequestContext.getSubcontext( "fi.vm.kapa.identification.shibboleth.context.KatsoContext" ) )
-                   <iframe style="display:none" onload="window.location = '$flowExecutionUrl&_eventId=proceed'" src="{{ katso_global_logout_url }}">
+                  <a id="katso-link" href="{{ katso_global_logout_url }}"></a>
+                  <script src="/resources/js/logout-proceed.js"></script>
                #else
                    #if ( $profileRequestContext.getProfileId().contains("saml2/logout") )
+                      <script src="/resources/js/logout-proceed.js"></script>
+                       <!--
                        <script type="text/javascript">
                            window.location = '$flowExecutionUrl&_eventId=proceed';
                        </script>
+                       -->
                    #end
                #end
+
            #end
         </div>
     </div>
@@ -119,16 +125,8 @@
 <script src="/resources/js/plugins.js"></script>
 <script src="/resources/js/main.js"></script>
 <script src="/resources/js/idp_localisation.js"></script>
-<script>
-    function setLanguage(lang) {
-        idpLocalisation.setUserLanguage(lang);
-        location.reload();
-    }
-    domready(function () {
-        var language = idpLocalisation.getLanguage();
-        idpLocalisation.localise(language, '#identification-service', '/static/localisation',
-        'suomifi-tunnistaminen-resource-idp_uloskirjautuminen_labels');
-    });
-</script>
+<script src="/resources/js/localise_logout.js"></script>
 </body>
+<script src="/resources/js/logout_propagate.js"></script>
+
 </html>

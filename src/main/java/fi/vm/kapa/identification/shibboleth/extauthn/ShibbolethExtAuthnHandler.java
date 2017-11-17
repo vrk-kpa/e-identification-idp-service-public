@@ -96,6 +96,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
     private String errorParamInvalidEID;
     private String errorParamPhaseID;
     private String errorParamCancel;
+    private String errorParamCookiesDisabled;
 
     public void init(ServletConfig config) throws ServletException {
         try {
@@ -115,6 +116,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
             errorParamInvalidEID = props.getProperty("failure.param.entityid");
             errorParamPhaseID = props.getProperty("failure.param.phaseid");
             errorParamCancel = props.getProperty("failure.param.cancel");
+            errorParamCookiesDisabled = props.getProperty("failure.param.cookiesdisabled");
             timeIntervalBuilt = Integer.parseInt(props.getProperty("phase.id.time.built.interval"));
             timeIntervalInit = Integer.parseInt(props.getProperty("phase.id.time.init.interval"));
             sharedSecret = props.getProperty("phase.id.shared.secret");
@@ -150,6 +152,15 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         PhaseIdService phaseIdInitSession = null;
         PhaseIdService phaseIdBuiltSession = null;
         ProxyClient proxyClient = new ProxyClient(proxyUrl);
+
+        // Check if cookies are set. If not, it means that cookies are disabled in the client and user needs to be
+        // redirected to error page.
+        if (request.getCookies() == null) {
+            logger.debug("Cookies disabled, redirecting to error page");
+            redirectUrl = createErrorURL(createLogTag(), errorParamCookiesDisabled);
+            response.sendRedirect(redirectUrl);
+            return;
+        }
 
         try {
             // Proxy-generated token ID that must be checked first
@@ -536,9 +547,11 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
      */
     private Cookie getCookie(HttpServletRequest request, String cookieName) {
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookieName.equals(cookie.getName())) {
-                return cookie;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookieName.equals(cookie.getName())) {
+                    return cookie;
+                }
             }
         }
         return null;

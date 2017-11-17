@@ -9,6 +9,7 @@ failure.param.idp.ext=idpext
 failure.param.entityid=entid
 failure.param.phaseid=phid
 failure.param.cancel=cancel
+failure.param.cookiesdisabled=cookie
 # -----------------------------------------------
 # NOTE! These values MUST match to what Proxy and SP are using
 # since these two shared values define the phase ID HMAC calculation!
@@ -25,3 +26,4 @@ phase.id.step.five={{phase_id_step_five}}
 smetadata.location={{smetadata_location}}
 smetadata.timeout={{smetadata_timeout}}
 smetadata.refresh.rate.minutes={{smetadata_refresh_rate_minutes}}
+katso.global.logout.url={{katso_global_logout_url}}

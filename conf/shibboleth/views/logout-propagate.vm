@@ -34,36 +34,33 @@
     <!--[if lt IE 9]>
     <script src="/resources/js/vendor/respond.js"></script>
     <![endif]-->
-    <script>
-        function setServiceName() {
-            var SERVER_LANG_COOKIE_NAME = 'E-Identification-Lang';
-            var USER_LANG_COOKIE_NAME = 'E-Identification-Lang-User';
-            var userDefinedLang = Cookies.get(USER_LANG_COOKIE_NAME);
-            var serverDefinedLang = Cookies.get(SERVER_LANG_COOKIE_NAME);
-            var definedLang = userDefinedLang ? userDefinedLang : serverDefinedLang;
-            if (definedLang == 'sv') {
-                document.getElementById("serviceDisplayName").textContent=document.getElementById("serviceDisplayNameSv").textContent;
-                document.getElementById("serviceDisplayNameReturn").textContent=document.getElementById("serviceDisplayNameSv").textContent;
-                $('.localizationsv').show();
-            } else if (definedLang == 'en') {
-                document.getElementById("serviceDisplayName").textContent=document.getElementById("serviceDisplayNameEn").textContent;
-                document.getElementById("serviceDisplayNameReturn").textContent=document.getElementById("serviceDisplayNameEn").textContent;
-                $('.localizationen').show();
-            } else {
-                document.getElementById("serviceDisplayName").textContent=document.getElementById("serviceDisplayNameFi").textContent;
-                document.getElementById("serviceDisplayNameReturn").textContent=document.getElementById("serviceDisplayNameFi").textContent;
-                $('.localizationfi').show();
-            }
-        }
-    </script>
+    <script src="/resources/js/vendor/jquery-1.11.2.min.js"></script>
+    <script src="/resources/js/vendor/js.cookie.js"></script>
+    <script src="/resources/js/vendor/i18next.min.js"></script>
+    <script src="/resources/js/vendor/jquery-i18next.js"></script>
+    <script src="/resources/js/vendor/i18nextXHRBackend.min.js"></script>
+    <script src="/resources/js/vendor/domready.js"></script>
+    <script src="/resources/js/idp_localisation.js"></script>
+    <script src="/resources/js/localise_logout.js"></script>
 </head>
-<body id="identification-service" onload="setServiceName()">
+<body id="identification-service">
     <a data-i18n="header__siirry_suoraan_sisaltoon" href="#main" class="visuallyhidden focusable">Siirry suoraan sisältöön</a>
     #include("header.html")
     <main id="main" role="main" name="main">
         <div class="main idp-logout-page">
+        #if ( $profileRequestContext.getSubcontext( "fi.vm.kapa.identification.shibboleth.context.KatsoContext" ) )
+            <iframe id="katso-logout-frame" link-target="$flowExecutionUrl&_eventId=proceed" class="visuallyhidden"
+                src="$profileRequestContext.getSubcontext( "fi.vm.kapa.identification.shibboleth.context.KatsoContext" ).getLogoutUrl()">
+            </iframe>
+        #end
+
             <div class="container">
+            #if ($logoutContext and !$logoutContext.getSessionMap().isEmpty())
                 #parse("logout/propagate.vm")
+			#else
+				<script src="/resources/js/logout-proceed.js"></script>
+			#end
+
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="sign-in-info">
@@ -75,25 +72,8 @@
         </div>
     </main>
     #include("footer.html")
-    <script src="/resources/js/vendor/jquery-1.11.2.min.js"></script>
-    <script src="/resources/js/vendor/js.cookie.js"></script>
-    <script src="/resources/js/vendor/i18next.min.js"></script>
-    <script src="/resources/js/vendor/jquery-i18next.js"></script>
-    <script src="/resources/js/vendor/i18nextXHRBackend.min.js"></script>
-    <script src="/resources/js/vendor/domready.js"></script>
+    <script src="/resources/js/logout-setservicename.js"></script>
     <script src="/resources/js/plugins.js"></script>
     <script src="/resources/js/main.js"></script>
-    <script src="/resources/js/idp_localisation.js"></script>
-    <script>
-        function setLanguage(lang) {
-            idpLocalisation.setUserLanguage(lang);
-            location.reload();
-        }
-        domready(function () {
-            var language = idpLocalisation.getLanguage();
-            idpLocalisation.localise(language, '#identification-service', '/static/localisation',
-            'suomifi-tunnistaminen-resource-idp_uloskirjautuminen_labels');
-        });
-    </script>
 </body>
 </html>

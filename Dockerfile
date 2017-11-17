@@ -1,6 +1,6 @@
 # Pull tomcat base image
 
-FROM dev-docker-registry.kapa.ware.fi/e-identification-tomcat-idp-3.2.1-base-image
+FROM dev-docker-registry.kapa.ware.fi/e-identification-tomcat-idp-3.2.1-base-image:v2
 
 # Copy files
 
@@ -27,7 +27,6 @@ RUN mkdir -p /opt/shibboleth-idp/edit-webapp/WEB-INF/jsp && \
     cp /tmp/conf/shibboleth/webapp/web.xml /opt/shibboleth-idp/edit-webapp/WEB-INF/web.xml && \
     cp /tmp/conf/shibboleth/views/intercept/attribute-release.vm /opt/shibboleth-idp/views/intercept/attribute-release.vm && \
     cp /tmp/conf/shibboleth/views/logout-propagate.vm /opt/shibboleth-idp/views/logout-propagate.vm && \
-    cp /tmp/conf/shibboleth/views/logout-complete.vm /opt/shibboleth-idp/views/logout-complete.vm && \
     cp /tmp/conf/shibboleth/views/logout/propagate.vm /opt/shibboleth-idp/views/logout/propagate.vm && \
     cp /tmp/conf/shibboleth/views/include.vm /opt/shibboleth-idp/views/include.vm && \
     cp /tmp/conf/shibboleth/views/header.html /opt/shibboleth-idp/views/header.html && \
@@ -49,7 +48,6 @@ RUN mkdir -p /opt/shibboleth-idp/edit-webapp/WEB-INF/jsp && \
 :                             && \
 : Templates                   && \
 :                             && \
-    cp /tmp/conf/shibboleth/views/logout.vm.template /data00/templates/store/ && \
     cp /tmp/conf/shibboleth/idp-install.properties.template /data00/templates/store/ && \
     cp /tmp/conf/shibboleth/idp-install.sh.template /data00/templates/store/ && \
     cp /tmp/conf/tomcat/identity-provider.properties.template /data00/templates/store/ && \

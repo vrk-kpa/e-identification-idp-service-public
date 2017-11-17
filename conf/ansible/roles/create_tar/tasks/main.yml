@@ -58,9 +58,6 @@
 - name: Copy shibboleth_logback.xml
   template: src={{ tempdir }}/shibboleth_logback.xml.template dest={{ tempdir }}/filled/shibboleth_logback.xml
 
-- name: Copy logout.vm
-  template: src={{ tempdir }}/logout.vm.template dest={{ tempdir }}/filled/logout.vm
-
 - name: Copy Shibboleth global.xml
   local_action: copy src={{ confdir }}/global.xml dest={{ tempdir }}/filled/global.xml
 

@@ -80,56 +80,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/resources/stylesheets/style.css">
     <script src="/resources/js/vendor/modernizr-2.8.3.min.js"></script>
-    <script>
-        var privacyStatementURL={};
-        privacyStatementURL["sv"]="${privacyStatementURLSv}";
-        privacyStatementURL["en"]="${privacyStatementURLEn}";
-        privacyStatementURL["fi"]="${privacyStatementURLFi}";
-
-        var serviceName={};
-        serviceName["sv"]="${spDisplayNameSv}";
-        serviceName["en"]="${spDisplayNameEn}";
-        serviceName["fi"]="${spDisplayNameFi}";
-
-        function setLocalisedUiFromMetadata() {
-            var psUrl;
-            function getLanguage() {
-                var SERVER_LANG_COOKIE_NAME = 'E-Identification-Lang';
-                var USER_LANG_COOKIE_NAME = 'E-Identification-Lang-User';
-                var userDefinedLang = Cookies.get(USER_LANG_COOKIE_NAME);
-                var serverDefinedLang = Cookies.get(SERVER_LANG_COOKIE_NAME);
-                return userDefinedLang ? userDefinedLang : serverDefinedLang;
-            };
-
-            function setServiceName(language) {
-                document.getElementById("serviceDisplayName").textContent = serviceName[language];
-            };
-
-            function getPrivacyStatementURL(language) {
-                return privacyStatementURL[language];
-            };
-
-            function setPrivacyStatementURL(value) {
-                document.getElementById("privacyStatement").setAttribute("href", value);
-            };
-
-            var definedLang = getLanguage();
-            setServiceName(definedLang);
-            psUrl = getPrivacyStatementURL(definedLang);
-            if (psUrl) {
-                setPrivacyStatementURL(psUrl);
-            } else {
-                var infoEl = document.getElementById("attribute-info");
-                var privacyEl = document.getElementById("privacy");
-                infoEl.removeChild(privacyEl);
-            }
-        };
-    </script>
     <!--[if lt IE 9]>
     <script src="/resources/js/vendor/respond.js"></script>
     <![endif]-->
 </head>
-<body id="identification-service" onload="setLocalisedUiFromMetadata()">
+<body id="identification-service">
 <a data-i18n="header__siirry_suoraan_sisaltoon" href="#main" class="visuallyhidden focusable">Siirry suoraan sisältöön</a>
 #include("header.html")
 <main id="main" role="main" name="main">
@@ -140,7 +95,7 @@
                     <div class="col-xs-12 identification-info">
                         <span data-i18n="attribute__otsikko">Olet tunnistautumassa palveluun</span>
                         #if ($spDisplayNameFi || $spDisplayNameSv || $spDisplayNameEn)
-                            <h2 id="serviceDisplayName"></h2>
+                            <h2 id="serviceDisplayName" name-fi="${spDisplayNameFi}" name-sv="${spDisplayNameSv}" name-en="${spDisplayNameEn}"></h2>
                         #end
                     </div>
                     <div class="col-xs-12 col-md-7">
@@ -457,7 +412,7 @@
                                     #if($spCounter > 0 && $authenticationResultCounter == 1)
                                         <a id="reject-link" href="#" class="button-cancel" data-i18n="attribute__keskeytys">Keskeytä siirtyminen</a>
                                     #else
-                                        <a href="javascript:void(0)" class="button-cancel" onclick="window.location = '$flowExecutionUrl&_eventId_RemoveAuthenticationResult'" data-i18n="attribute__keskeytys">Keskeytä siirtyminen</a>
+                                        <a id="reject-link-2" class="button-cancel" link-target="$flowExecutionUrl&_eventId_RemoveAuthenticationResult" data-i18n="attribute__keskeytys">Keskeytä siirtyminen</a>
                                     #end
                                 </div>
                             </div>
@@ -474,7 +429,7 @@
                         #end
                         <p id="privacy" class="small"><span data-i18n="attribute__tietolahde__rekisteriseloste__kuvaus">Palvelu, johon olet tunnistautumassa, tarvitsee henkilötietosi asiointia varten. Palvelun
                             rekisteriseloste kuvaa tarkemmin tietojen käyttötarkoituksen.</span>
-                            <a id="privacyStatement" href="" rel="external" data-i18n="attribute__tietolahde__rekisteriseloste__linkki">Palvelun rekisteriseloste</a></p>
+                            <a id="privacyStatement" href="" href-fi="${privacyStatementURLFi}" href-sv="${privacyStatementURLSv}" href-en="${privacyStatementURLEn}" rel="external" data-i18n="attribute__tietolahde__rekisteriseloste__linkki">Palvelun rekisteriseloste</a></p>
                     </div>
                 </div>
             </div>
@@ -491,19 +446,6 @@
 <script src="/resources/js/plugins.js"></script>
 <script src="/resources/js/main.js"></script>
 <script src="/resources/js/idp_localisation.js"></script>
-<script src="/resources/js/attributerelease.js"></script>
-<script>
-
-    function setLanguage(lang) {
-        idpLocalisation.setUserLanguage(lang);
-        location.reload();
-    }
-
-    domready(function () {
-        var language = idpLocalisation.getLanguage();
-        idpLocalisation.localise(language, '#identification-service', '/static/localisation',
-                'suomifi-tunnistaminen-resource-idp_attribute_labels');
-    });
-</script>
 </body>
+<script src="/resources/js/attributerelease.js"></script>
 </html>

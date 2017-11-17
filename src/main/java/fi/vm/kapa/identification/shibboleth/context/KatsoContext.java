@@ -22,8 +22,34 @@
  */
 package fi.vm.kapa.identification.shibboleth.context;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
+import java.util.Properties;
+
 import org.opensaml.messaging.context.BaseContext;
 
 public class KatsoContext extends BaseContext {
+    private final static Logger logger = LoggerFactory.getLogger(KatsoContext.class);
 
+    private String logoutUrl;
+
+    public KatsoContext() {
+        try {
+            Properties props = new Properties();
+            props.load(new FileInputStream("/opt/identity-provider/identity-provider.properties"));
+            this.logoutUrl = props.getProperty("katso.global.logout.url");
+        } catch (Exception e) {
+            logger.error("Error starting KatsoContext", e);
+        }
+    }
+
+    public String getLogoutUrl() {
+        return logoutUrl;
+    }
+
+    public void setLogoutUrl(String logoutUrl) {
+        this.logoutUrl = logoutUrl;
+    }
 }
