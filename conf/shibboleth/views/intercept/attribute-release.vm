@@ -131,7 +131,7 @@
                                 #if($personIdentifier)
                                     <tr>
                                         <td class="strong" data-i18n="attribute__personid">Person-ID:</td>
-                                        <td>
+                                        <td class="break-words-forced">
                                             #foreach ($value in $personIdentifier.values)
                                                 <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
                                                 <br>

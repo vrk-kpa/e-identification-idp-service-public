@@ -39,10 +39,12 @@ import net.shibboleth.idp.saml.authn.principal.AuthnContextClassRefPrincipal;
 import net.shibboleth.idp.session.context.SessionContext;
 import org.apache.commons.lang.StringUtils;
 import org.opensaml.profile.context.ProfileRequestContext;
+import org.opensaml.saml.saml2.core.AuthnContextClassRef;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Extensions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import javax.security.auth.Subject;
 import javax.servlet.ServletConfig;
@@ -62,6 +64,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @WebServlet(name = "ShibbolethExtAuthnHandler", urlPatterns = {"/authn/External/*"})
 public class ShibbolethExtAuthnHandler extends HttpServlet {
@@ -162,6 +165,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
             return;
         }
 
+
         try {
             // Proxy-generated token ID that must be checked first
             String tid = request.getParameter("tid");
@@ -185,7 +189,9 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
                 logger.debug("Language is: " + language);
                 setLangCookie(request, response, language);
 
+                logIfAuthnMethodsRequested(prc);
                 String requestedAuthenticationMethodSet = resolveRequestAuthenticationContextClassList(prc);
+
                 //Get existing uid from IdP session. Set value to 0 (AuthMethod INIT) if null.
                 String uid = existingAuthenticationSubjectName(prc);
                 if (StringUtils.isBlank(uid)) {
@@ -518,6 +524,31 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
             }
         }
     }
+
+
+    /**
+     * Logs if service provider explicitly requested authentication methods in SAML authn request.
+     *
+     * @param profileRequestContext
+     */
+    private void logIfAuthnMethodsRequested(ProfileRequestContext profileRequestContext) {
+
+        AuthnRequest message = (AuthnRequest) profileRequestContext.getInboundMessageContext().getMessage();
+        if( message.getRequestedAuthnContext() != null) {
+
+            List<AuthnContextClassRef> authnContextClassRefs = message.getRequestedAuthnContext().getAuthnContextClassRefs();
+            if( !CollectionUtils.isEmpty(authnContextClassRefs) ) {
+                logger.info("Service provider explicitly requested authentication methods; " +
+                                "Service provider: {}, authentication methods: {}.",
+                        message.getIssuer().getValue(),
+                        (authnContextClassRefs.stream()
+                                .map(authnContextClassRef -> authnContextClassRef.getAuthnContextClassRef()))
+                                .collect(Collectors.toList()));
+            }
+        }
+
+    }
+
 
     /**
      * Set a browser language cookie based on authentication request language parameter.
