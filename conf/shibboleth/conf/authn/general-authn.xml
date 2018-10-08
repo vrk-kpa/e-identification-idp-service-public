@@ -31,10 +31,9 @@
         <bean id="authn/ext1" parent="shibboleth.AuthenticationFlow" p:nonBrowserSupported="true">
             <property name="supportedPrincipals">
                 <util:list>
-                    <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oid:1.2.246.517.3002.110.1" />
-                    <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oid:1.2.246.517.3002.110.2" />
-                    <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oid:1.2.246.517.3002.110.3" />
-                    <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oid:1.2.246.517.3002.110.4" />
+                    <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="http://ftn.ficora.fi/2017/loa3" />
+                    <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="http://eidas.europa.eu/LoA/high" />
+                    <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="http://ftn.ficora.fi/2017/loa2" />
                     <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oid:1.2.246.517.3002.110.5" />
                     <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oid:1.2.246.517.3002.110.6" />
                     <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oid:1.2.246.517.3002.110.11" />

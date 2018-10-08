@@ -26,6 +26,10 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
+    <session-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
     <!-- Filters and filter mappings -->
     <!-- Try and force I18N, probably won't help much. -->
     <filter>

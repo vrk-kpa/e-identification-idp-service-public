@@ -128,19 +128,6 @@
                                                value="$encoder.encodeForHTML($kid.id)"/>
                                     </tr>
                                 #end
-                                #if($personIdentifier)
-                                    <tr>
-                                        <td class="strong" data-i18n="attribute__personid">Person-ID:</td>
-                                        <td class="break-words-forced">
-                                            #foreach ($value in $personIdentifier.values)
-                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
-                                                <br>
-                                            #end
-                                        </td>
-                                        <input id="$personIdentifier.id" type="hidden" name="_shib_idp_consentIds"
-                                               value="$encoder.encodeForHTML($personIdentifier.id)"/>
-                                    </tr>
-                                #end
                                 #if($dateOfBirth)
                                 <tr>
                                     <td class="strong" data-i18n="attribute__syntymaaika">Syntymäaika:</td>
@@ -349,6 +336,20 @@
                                                value="$encoder.encodeForHTML($protectionOrder.id)"/>
                                     </tr>
                                 #end
+                                #if($personIdentifier)
+                                    <tr>
+                                        <td class="strong" data-i18n="attribute__personid">Person-ID:</td>
+                                        <td class="break-words-forced">
+                                            #foreach ($value in $personIdentifier.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                                <br>
+                                            #end
+                                        </td>
+                                        <input id="$personIdentifier.id" type="hidden" name="_shib_idp_consentIds"
+                                               value="$encoder.encodeForHTML($personIdentifier.id)"/>
+                                    </tr>
+                                #end
+
                             </table>
                             #if($municipalityCode)
                                 <input id="$municipalityCode.id" type="hidden" name="_shib_idp_consentIds"
@@ -427,15 +428,26 @@
                         #if ($vtjVerified && $vtjVerified.values.get(0).getValue() == "true")
                             <p class="small" data-i18n="attribute__tietolahde">Henkilötietosi on haettu Väestötietojärjestelmästä.</p>
                         #end
-                        <p id="privacy" class="small"><span data-i18n="attribute__tietolahde__rekisteriseloste__kuvaus">Palvelu, johon olet tunnistautumassa, tarvitsee henkilötietosi asiointia varten. Palvelun
-                            rekisteriseloste kuvaa tarkemmin tietojen käyttötarkoituksen.</span>
-                            <a id="privacyStatement" href="" href-fi="${privacyStatementURLFi}" href-sv="${privacyStatementURLSv}" href-en="${privacyStatementURLEn}" rel="external" data-i18n="attribute__tietolahde__rekisteriseloste__linkki">Palvelun rekisteriseloste</a></p>
+                        <p id="privacy" class="small">
+                            <span data-i18n="attribute__tietolahde__rekisteriseloste__kuvaus">
+                                Palvelu, johon olet tunnistautumassa, tarvitsee henkilötietosi asiointia varten. Palvelun rekisteriseloste kuvaa tarkemmin tietojen käyttötarkoituksen.
+                            </span>
+                            <a id="privacyStatement" href="" href-fi="${privacyStatementURLFi}" href-sv="${privacyStatementURLSv}" href-en="${privacyStatementURLEn}" rel="external" data-i18n="attribute__tietolahde__rekisteriseloste__linkki">Palvelun rekisteriseloste</a>
+                        </p>
+                        #if ($vtjVerified && $vtjVerified.values.get(0).getValue() == "true")
+                        <p id="privacy" class="small">
+                            <span data-i18n="[html]attribute__tietolahde__muutos">
+                                Voit tarkastaa ja päivittää joitakin tietojasi itse Omien tietojen tarkastus -palvelussa. Osaa tiedoista ylläpitää kotikunnan mukainen maistraatti, jonka tiedot löytyvät tarkastuspalvelusta.
+                            </span>
+                        </p>
+                        #end
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </main>
+
 #include("footer.html")
 <script src="/resources/js/vendor/jquery-1.11.2.min.js"></script>
 <script src="/resources/js/vendor/js.cookie.js"></script>

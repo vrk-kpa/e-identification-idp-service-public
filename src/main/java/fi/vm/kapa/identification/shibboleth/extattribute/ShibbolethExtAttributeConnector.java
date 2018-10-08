@@ -107,16 +107,15 @@ public class ShibbolethExtAttributeConnector extends AbstractDataConnector {
         @Nonnull AttributeResolverWorkContext attributeResolverWorkContext)
         throws ResolutionException {
 
-        String matchingAuthContextClass = null;
+        String authMethodOid;
         try {
-            matchingAuthContextClass = attributeResolutionContext.getParent().getSubcontext(AuthenticationContext.class).getSubcontext(RequestedPrincipalContext.class).getMatchingPrincipal().toString();
+            authMethodOid = attributeResolutionContext.getParent().getSubcontext(AuthenticationContext.class).getSubcontext(RequestedPrincipalContext.class).getMatchingPrincipal().getName();
         } catch (Exception e) {
             logger.warn("Failed to assign matchingAuthContextClass", e);
             throw new ResolutionException("Failed to assign matchingAuthContextClass", e);
         }
-        String authMethodOid;
-        if (StringUtils.isNotBlank(matchingAuthContextClass) && StringUtils.isNotBlank(parseOid(matchingAuthContextClass))) {
-            authMethodOid = parseOid(matchingAuthContextClass);
+
+        if ( StringUtils.isNotBlank(authMethodOid) ) {
             logger.debug("Matching authentication method OID: " + authMethodOid);
         } else {
             logger.warn("Failed to parse authMethodOid");
@@ -188,12 +187,4 @@ public class ShibbolethExtAttributeConnector extends AbstractDataConnector {
         this.proxyUrl = proxyUrl;
     }
 
-    private String parseOid(String authContextClass) {
-        Pattern oid = Pattern.compile("urn:oid:(?:\\d+\\.)+\\d+");
-        Matcher matcher = oid.matcher(authContextClass);
-        if (matcher.find()) {
-            return matcher.group(0);
-        }
-        return null;
-    }
 }

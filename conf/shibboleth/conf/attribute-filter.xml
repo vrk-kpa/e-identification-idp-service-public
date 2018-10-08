@@ -62,6 +62,15 @@
 
     </afp:AttributeFilterPolicy>
 
+    <afp:AttributeFilterPolicy id="release-protectionOrder-onlyIfRequired">
+        <afp:PolicyRequirementRule xsi:type="basic:AttributeValueString" attributeID="protectionOrder" value="1" />
+
+        <afp:AttributeRule attributeID="protectionOrder">
+            <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
+        </afp:AttributeRule>
+
+    </afp:AttributeFilterPolicy>  
+  
     <afp:AttributeFilterPolicy id="releaseTo">
         <afp:PolicyRequirementRule xsi:type="basic:ANY"/>
 
@@ -72,11 +81,7 @@
         <afp:AttributeRule attributeID="mail">
             <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
         </afp:AttributeRule>
-        
-        <afp:AttributeRule attributeID="protectionOrder">
-            <afp:PermitValueRule xsi:type="basic:AttributeValueString" attributeID="protectionOrder" value="1"/>
-        </afp:AttributeRule>
-           
+
         <afp:AttributeRule attributeID="cn">
             <afp:PermitValueRule xsi:type="saml:AttributeInMetadata" onlyIfRequired="false"/>
         </afp:AttributeRule>

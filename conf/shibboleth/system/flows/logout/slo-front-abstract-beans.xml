@@ -34,10 +34,6 @@
 
     <alias name="shibboleth.OutgoingSAML2SLOBindings" alias="shibboleth.OutgoingBindings"/>
 
-    <bean id="KatsoCheck"
-        class="fi.vm.kapa.identification.shibboleth.flow.SLOCheckKatso" scope="prototype"
-        p:sessionResolver-ref="shibboleth.SessionManager" />
-
     <bean id="ProcessLogoutRequest"
         class="net.shibboleth.idp.saml.saml2.profile.impl.ProcessLogoutRequest" scope="prototype"
         p:sessionManager-ref="shibboleth.SessionManager"

@@ -40,21 +40,13 @@
         <evaluate expression="'proceed'" />
 
         <transition on="proceed" to="ClientStorageLoad" />
-        <transition on="NoLoadNeeded" to="DoKatsoCheck" />
+        <transition on="NoLoadNeeded" to="DoLogoutRequest" />
     </action-state>
 
     <subflow-state id="ClientStorageLoad" subflow="client-storage/read">
         <input name="calledAsSubflow" value="true" />
-        <transition on="proceed" to="DoKatsoCheck"/>
+        <transition on="proceed" to="DoLogoutRequest"/>
     </subflow-state>
-
-    <action-state id="DoKatsoCheck">
-        <evaluate expression="KatsoCheck" />
-        <evaluate expression="'proceed'" />
-
-        <transition on="proceed" to="DoLogoutRequest" />
-    </action-state>
-
 
     <action-state id="DoLogoutRequest">
         <evaluate expression="ProcessLogoutRequest" />

@@ -57,7 +57,7 @@ public class ShibbolethExtAttributeConnectorTest {
     @Test
     public void testProxy404Error() throws Exception {
         Principal principal = mock(Principal.class);
-        when(principal.toString()).thenReturn("urn:oid:1.2.3.4.5.6.7");
+        when(principal.getName()).thenReturn("urn:oid:1.2.3.4.5.6.7");
 
         ProfileRequestContext baseContext = PowerMockito.mock(ProfileRequestContext.class);
         

@@ -47,7 +47,18 @@
         <!--</property>-->
     <!--</bean>-->
 
-    <bean id="shibboleth.MinimumClassRefMatchFactory" parent="shibboleth.InexactMatchFactory" />
+    <bean id="shibboleth.MinimumClassRefMatchFactory" parent="shibboleth.InexactMatchFactory">
+        <property name="matchingRules">
+            <map>
+                <entry key="http://ftn.ficora.fi/2017/loa2">
+                    <list>
+                        <value>http://ftn.ficora.fi/2017/loa2</value>
+                        <value>http://ftn.ficora.fi/2017/loa3</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
 
     <bean id="shibboleth.MaximumClassRefMatchFactory" parent="shibboleth.InexactMatchFactory" />
 
@@ -73,7 +84,7 @@
 
 
         <!-- Minimum matching, leave to allow degeneration into exact, or replace with custom rules. -->
-        <entry key-ref="shibboleth.SAMLACClassRefMinimum" value-ref="shibboleth.ExactMatchFactory"/>
+        <entry key-ref="shibboleth.SAMLACClassRefMinimum" value-ref="shibboleth.MinimumClassRefMatchFactory"/>
         <entry key-ref="shibboleth.SAMLACDeclRefMinimum" value-ref="shibboleth.ExactMatchFactory"/>
 
         <!-- Maximum matching, leave to allow degeneration into exact, or replace with custom rules. -->

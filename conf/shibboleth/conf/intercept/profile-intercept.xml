@@ -31,6 +31,8 @@
                 <bean id="intercept/attribute-release" parent="shibboleth.consent.AttributeReleaseFlow" />
 
                 <bean id="intercept/vtjverify" parent="shibboleth.InterceptFlow" />
+                
+                <bean id="intercept/eidas-session-destroy" parent="shibboleth.InterceptFlow" />
             </list>
         </property>
     </bean>

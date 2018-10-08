@@ -27,6 +27,7 @@ import fi.vm.kapa.identification.service.PhaseIdHistoryService;
 import fi.vm.kapa.identification.service.PhaseIdService;
 import fi.vm.kapa.identification.service.UrlParamService;
 import fi.vm.kapa.identification.shibboleth.client.ProxyClient;
+import fi.vm.kapa.identification.shibboleth.exception.SessionFinaliseException;
 import fi.vm.kapa.identification.type.AuthMethod;
 import fi.vm.kapa.identification.type.SessionStatus;
 import net.shibboleth.idp.authn.AuthenticationResult;
@@ -62,6 +63,7 @@ import java.security.Principal;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -249,34 +251,37 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
                         redirectUrl = createErrorURL(logTag, errorParamIdpExt);
                     }
                 } else {
-                    String[] keyAndUid = new String[3];
-                    redirectUrl = finaliseSession(proxyClient, tid, pid, phaseIdBuiltSession, logTag, keyAndUid);
-                    logger.debug("Finalise redirectUrl (null if ok): " + redirectUrl);
-                /* This redirect URL is always null if everything went according
-                 * to plans, if it's not then the user must be redirected to standard
-                 * error page with the given additional info
-                 */
-                    if (StringUtils.isBlank(redirectUrl)) {
-                    /* The first value in the array is always the Shibboleth conversation key
-                     * that was fetched in the session init and the second one is always the
-                     * user's generated UID hash that is used to fetch the attributes
-                     */
-                        /** External authentication success. Give control back to Shibboleth IdP (7.) */
-                        //Get existing active authentication class principals from IdP session
-                        ProfileRequestContext prc = ExternalAuthentication.getProfileRequestContext(keyAndUid[0], request);
-                        Set<Principal> principals = getExistingActiveAuthenticationClassPrincipals(prc);
-                        logger.debug("Existing principals in principal set: " + !principals.isEmpty());
-                        principals.add(new UsernamePrincipal(keyAndUid[1]));
-                        principals.add(new AuthnContextClassRefPrincipal(AuthMethod.valueOf(keyAndUid[2]).getOidValue()));
-                        Subject subject = new Subject();
-                        subject.getPrincipals().addAll(principals);
-                        request.setAttribute(ExternalAuthentication.SUBJECT_KEY, subject);
-                        ExternalAuthentication.finishExternalAuthentication(keyAndUid[0], request, response);
+                    ProxyMessageDTO message;
+                    try {
+                        message = finaliseSession(proxyClient, tid, pid, phaseIdBuiltSession, logTag);
+                    } catch (SessionFinaliseException sfe ) {
+                        logger.warn("<<{}>> {}", logTag, sfe.getMessage());
+                        response.sendRedirect(createErrorURL(logTag, sfe.getErrorCode()));
+                        return;
+                    }
+
+                    /** External authentication success. Give control back to Shibboleth IdP (7.) */
+                    //Get existing active authentication class principals from IdP session
+                    ProfileRequestContext prc = ExternalAuthentication.getProfileRequestContext(message.getConversationKey(), request);
+                    Set<Principal> principals = getExistingActiveAuthenticationClassPrincipals(prc);
+                    logger.debug("Existing principals in principal set: " + !principals.isEmpty());
+                    principals.add(new UsernamePrincipal(message.getUid()));
+                    for ( AuthMethod authMethod : message.getSessionAuthenticationMethods() ) {
+                        principals.add(new AuthnContextClassRefPrincipal(authMethod.getOidValue()));
+                        logger.debug("Added AuthnContextClassRefPrincipal: " + authMethod.getOidValue());
+                        if (authMethod.equals(AuthMethod.eLoA3)) {
+                            request.setAttribute(ExternalAuthentication.DONOTCACHE_KEY, true);
+                        }
+                    }
+                    Subject subject = new Subject();
+                    subject.getPrincipals().addAll(principals);
+                    request.setAttribute(ExternalAuthentication.SUBJECT_KEY, subject);
+                    ExternalAuthentication.finishExternalAuthentication(message.getConversationKey(), request, response);
                     /* This explicit return must be used since the 'finishExternalAuthentication' method
                      * contains 'response.sendRedirect()' method call
                      */
-                        return;
-                    }
+                    return;
+
                 }
             }
         } catch (ExternalAuthenticationException eae) {
@@ -337,7 +342,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         String logTag = createLogTag();
         // Relying party parameter must match the allowed entity ID format
         if (UrlParamService.isValidEntityId(relyingParty)) {
-            String spCallUrl = sessionInit(proxyClient, uid, relyingParty, convKey, logTag, requestedAuthenticationMethodStr);
+            String spCallUrl = proxySessionInit(proxyClient, uid, relyingParty, convKey, logTag, requestedAuthenticationMethodStr);
             if (StringUtils.isNotBlank(spCallUrl)) {
                 logger.debug("Session init OK, redirect to SP (3.)  - spCallUrl: {}", spCallUrl);
                 /** Session init OK, redirect to SP (3.) */
@@ -353,15 +358,10 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         return redirectUrl;
     }
 
-    private String finaliseSession(ProxyClient proxyClient,
+    private ProxyMessageDTO finaliseSession(ProxyClient proxyClient,
                                    String tid, String pid,
                                    PhaseIdService phaseIdBuiltSession,
-                                   String logTag,
-                                   String[] keyAndUid) {
-        /* This redirect URL is used only if something goes wrong in the session fetch,
-         * this URL is null in successful session fetch
-         */
-        String redirectUrl = null;
+                                   String logTag) throws SessionFinaliseException {
         String phaseId = null;
 
         /* Token and phase IDs must be checked if they've been used already
@@ -379,30 +379,27 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
                     phaseId = phaseIdBuiltSession.newPhaseId(tid, stepGetSession);
                 }
             } catch (Exception e) {
-                logger.warn("<<{}>> Failed to verify or generate next phase ID", logTag, e);
-                redirectUrl = createErrorURL(logTag, errorParamPhaseID);
+                throw new SessionFinaliseException("Failed to verify or generate next phase ID", errorParamPhaseID);
             }
         } else {
             logger.warn("Received already consumed token and phase IDs!!");
         }
-        if (phaseId != null) {
-            /** Fetch session data from Proxy (6.) */
-            ProxyMessageDTO message = sessionFetch(proxyClient, tid, phaseId, logTag);
-            keyAndUid[0] = message.getConversationKey();
-            keyAndUid[1] = message.getUid();
-            keyAndUid[2] = message.getUsedAuthenticationMethod();
-
-            logger.debug("--conversationKey: " + keyAndUid[0] + ", uid: " + keyAndUid[1] + ", used auth method: " + keyAndUid[2]);
-            // This array is always fixed in length and it must be kept that way
-            if (StringUtils.isBlank(keyAndUid[0]) || StringUtils.isBlank(keyAndUid[1]) || StringUtils.isBlank(keyAndUid[2])) {
-                logger.warn("<<{}>> Getting session identifiers failed", logTag);
-                redirectUrl = createErrorURL(logTag, errorParamInternal);
-            }
-        } else {
-            logger.warn("<<{}>> Phase ID is not valid", logTag);
-            redirectUrl = createErrorURL(logTag, errorParamPhaseID);
+        if (phaseId == null) {
+            throw new SessionFinaliseException("Phase ID is not valid", errorParamPhaseID);
         }
-        return redirectUrl;
+        /** Fetch session data from Proxy (6.) */
+        ProxyMessageDTO message = sessionFetch(proxyClient, tid, phaseId, logTag);
+        String conversationKey = message.getConversationKey();
+        String uid = message.getUid();
+        AuthMethod[] authMethods = message.getSessionAuthenticationMethods();
+
+        logger.debug("--conversationKey: " + conversationKey + ", uid: " + uid + ", used auth method: " + (authMethods == null ? "null" : authMethods[0]));
+        // This array is always fixed in length and it must be kept that way
+        if (StringUtils.isBlank(conversationKey) || StringUtils.isBlank(uid) || authMethods == null || authMethods.length == 0 ) {
+            throw new SessionFinaliseException("Getting session identifiers failed", errorParamPhaseID);
+        }
+
+        return message;
     }
 
     /**
@@ -447,27 +444,25 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
      * @param requestedAuthenticationMethodSet
      * @return
      */
-    private String sessionInit(ProxyClient proxyClient,
-                               String uid,
-                               String relyingParty,
-                               String conversationKey,
-                               String logTag,
-                               final String requestedAuthenticationMethodSet) {
+    private String proxySessionInit(ProxyClient proxyClient,
+                                    String uid,
+                                    String relyingParty,
+                                    String conversationKey,
+                                    String logTag,
+                                    final String requestedAuthenticationMethodSet) {
 
         String spCallUrl = null;
-        ProxyMessageDTO responseEntity = null;
         try {
-            responseEntity = proxyClient.addSession(relyingParty, uid, conversationKey, requestedAuthenticationMethodSet, logTag);
+            ProxyMessageDTO responseEntity = proxyClient.addSession(relyingParty, uid, conversationKey, requestedAuthenticationMethodSet, logTag);
 
             if (responseEntity != null) {
                 /**
                  * generating a link to discovery-page containing Entityid (relyingParty) of original service that is requesting authentication
                  */
-                spCallUrl = discoveryPagePath + "?entityId=" + java.net.URLEncoder.encode(relyingParty, StandardCharsets.UTF_8.toString()) + "&return=" + java.net.URLEncoder.encode(sp_login_path, StandardCharsets.UTF_8.toString());
-                final String extraPart = spURLBase + responseEntity.getTokenId() + "&pid=" + responseEntity.getPhaseId() + "&tag=" + logTag;
+                spCallUrl = discoveryPagePath + "?entityId=" + java.net.URLEncoder.encode(relyingParty, StandardCharsets.UTF_8.toString());
                 spCallUrl = spCallUrl + "&timeout=" + getDiscoveryPageTimeout();
-                spCallUrl = spCallUrl + "&target=" + java.net.URLEncoder.encode(extraPart, StandardCharsets.UTF_8.toString());
-                spCallUrl = spCallUrl + "&authMethdReq=" + responseEntity.getAuthenticationMethods();
+                spCallUrl = spCallUrl + "&tid=" + responseEntity.getTokenId() + "&pid=" + responseEntity.getPhaseId() + "&tag=" + logTag;
+                spCallUrl = spCallUrl + "&authMethdReq=" + responseEntity.getRequestedAuthenticationMethods();
             }
         } catch (IOException ioe) {
             logger.warn("<<{}>> Failed to connect to Proxy for session init", logTag, ioe);
@@ -644,23 +639,19 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         AuthenticationContext ac = profileRequestContext.getSubcontext(AuthenticationContext.class);
         RequestedPrincipalContext rpc = ac.getSubcontext(RequestedPrincipalContext.class);
         String authenticationContextClassList = "";
-        Pattern oid = Pattern.compile("urn:oid:(?:\\d+\\.)+\\d+");
         if (rpc != null) {
             for (Principal principal : rpc.getRequestedPrincipals()) {
-                logger.debug("Requested principal: " + principal.toString());
                 if (principal instanceof AuthnContextClassRefPrincipal) {
-                    Matcher matcher = oid.matcher(principal.getName());
-                    if (matcher.find()) {
-                        logger.debug("Requested oid: " + matcher.group(0));
-                        String authenticationContextOid = matcher.group(0);
-                        for (AuthMethod authMethod : AuthMethod.values()) {
-                            if (authMethod.getOidValue().contentEquals(authenticationContextOid)) {
-                                logger.debug("Requested oid friendly name: " + authMethod.toString());
-                                if (authenticationContextClassList.isEmpty()) {
-                                    authenticationContextClassList += authMethod.toString();
-                                } else {
-                                    authenticationContextClassList += ";" + authMethod.toString();
-                                }
+                    // eg. "urn:oid:1.2.246.517.3002.110.6" / "http://ftn.ficora.fi/2017/loa2"
+                    String authenticationContextOid = principal.getName();
+                    logger.debug("Requested principal: " + authenticationContextOid);
+                    for (AuthMethod authMethod : AuthMethod.values()) {
+                        if (authMethod.getOidValue().contentEquals(authenticationContextOid)) {
+                            logger.debug("Requested oid friendly name: " + authMethod.toString());
+                            if (authenticationContextClassList.isEmpty()) {
+                                authenticationContextClassList += authMethod.toString();
+                            } else {
+                                authenticationContextClassList += ";" + authMethod.toString();
                             }
                         }
                     }

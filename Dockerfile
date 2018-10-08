@@ -1,6 +1,6 @@
 # Pull tomcat base image
 
-FROM dev-docker-registry.kapa.ware.fi/e-identification-tomcat-idp-3.2.1-base-image:v2
+FROM e-identification-docker-virtual.vrk-artifactory-01.eden.csc.fi/e-identification-tomcat-idp-3.2.1-base-image:v2
 
 # Copy files
 
@@ -19,6 +19,7 @@ RUN mkdir -p /opt/shibboleth-idp/edit-webapp/WEB-INF/jsp && \
     mkdir -p /opt/shibboleth-idp/flows/authn/ext2 && \
     mkdir -p /opt/shibboleth-idp/flows/intercept/attribute-release && \
     mkdir -p /opt/shibboleth-idp/flows/intercept/vtjverify && \
+    mkdir -p /opt/shibboleth-idp/flows/intercept/eidas-session-destroy && \
     mkdir -p /data00/templates/store/ && \
     cp /tmp/conf/tomcat/catalina.properties /usr/share/tomcat/conf/catalina.properties && \
     cp /tmp/conf/tomcat/idp.xml /usr/share/tomcat/conf/Catalina/localhost/idp.xml && \
@@ -42,6 +43,8 @@ RUN mkdir -p /opt/shibboleth-idp/edit-webapp/WEB-INF/jsp && \
     cp /tmp/conf/shibboleth/conf/intercept/consent-intercept-config.xml /opt/shibboleth-idp/conf/intercept/consent-intercept-config.xml && \
     cp /tmp/conf/shibboleth/flows/intercept/vtjverify/vtjverify-beans.xml /opt/shibboleth-idp/flows/intercept/vtjverify/vtjverify-beans.xml && \
     cp /tmp/conf/shibboleth/flows/intercept/vtjverify/vtjverify-flow.xml /opt/shibboleth-idp/flows/intercept/vtjverify/vtjverify-flow.xml && \
+    cp /tmp/conf/shibboleth/flows/intercept/eidas-session-destroy/eidas-session-destroy-beans.xml /opt/shibboleth-idp/flows/intercept/eidas-session-destroy/eidas-session-destroy-beans.xml && \
+    cp /tmp/conf/shibboleth/flows/intercept/eidas-session-destroy/eidas-session-destroy-flow.xml /opt/shibboleth-idp/flows/intercept/eidas-session-destroy/eidas-session-destroy-flow.xml && \
     cp /tmp/conf/shibboleth/conf/intercept/profile-intercept.xml /opt/shibboleth-idp/conf/intercept/profile-intercept.xml && \
     cp /tmp/conf/shibboleth/conf/intercept/intercept-events-flow.xml /opt/shibboleth-idp/conf/intercept/intercept-events-flow.xml && \
     cp /tmp/conf/shibboleth/conf/audit.xml /opt/shibboleth-idp/conf/audit.xml && \
