@@ -14,16 +14,14 @@
 
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer"
         p:placeholderPrefix="%{" p:placeholderSuffix="}" />
-
-    <bean class="net.shibboleth.idp.profile.impl.ProfileActionBeanPostProcessor" />
-    <bean class="net.shibboleth.ext.spring.config.IdentifiableBeanPostProcessor" />
-
+        
     <import resource="common-beans.xml" />
 
     <util:constant id="shibboleth.EndpointType"
         static-field="org.opensaml.saml.saml2.metadata.SingleLogoutService.DEFAULT_ELEMENT_NAME" />
 
-    <bean id="InitializeProfileRequestContext" class="net.shibboleth.idp.profile.impl.InitializeProfileRequestContext"
+    <bean id="InitializeProfileRequestContext"
+        class="net.shibboleth.idp.profile.impl.InitializeProfileRequestContext" scope="prototype"
         p:profileId="#{T(net.shibboleth.idp.saml.saml2.profile.config.SingleLogoutProfileConfiguration).PROFILE_ID}"
         p:loggingId="%{idp.service.logging.saml2slo:Logout}"
         p:browserProfile="true" />
@@ -38,24 +36,58 @@
         class="net.shibboleth.idp.saml.saml2.profile.impl.ProcessLogoutRequest" scope="prototype"
         p:sessionManager-ref="shibboleth.SessionManager"
         p:sessionResolver-ref="shibboleth.SessionManager" />
+    
+    <bean id="LogoutPopulateAuditContext" parent="shibboleth.AbstractPopulateAuditContext"
+        p:fieldExtractors="#{getObject('shibboleth.LogoutRequestAuditExtractors') ?: getObject('shibboleth.DefaultLogoutRequestAuditExtractors')}" />
 
-    <bean id="LogoutPopulateAuditContext"
-        class="net.shibboleth.idp.profile.audit.impl.PopulateAuditContext" scope="prototype"
-        p:fieldExtractors="#{getObject('shibboleth.LogoutRequestAuditExtractors') ?: getObject('shibboleth.DefaultLogoutRequestAuditExtractors')}"
-        p:formattingMap-ref="shibboleth.AuditFormattingMap" />
-
+    <bean id="SetIssuerRPUIInformation"
+            class="net.shibboleth.idp.ui.impl.SetRPUIInformation" scope="prototype"
+            p:activationCondition="%{idp.logout.elaboration:false}"
+            p:httpServletRequest-ref="shibboleth.HttpServletRequest">
+        <property name="fallbackLanguages">
+            <bean parent="shibboleth.CommaDelimStringArray" c:_0="#{'%{idp.ui.fallbackLanguages:}'.trim()}" />
+        </property>
+        <property name="metadataContextLookupStrategy">
+            <bean class="com.google.common.base.Functions" factory-method="compose">
+                <constructor-arg name="g">
+                    <bean class="com.google.common.base.Functions" factory-method="compose">
+                        <constructor-arg name="g">
+                            <ref bean="shibboleth.ChildLookup.SAMLMetadataContext" />
+                        </constructor-arg>
+                        <constructor-arg name="f">
+                            <ref bean="shibboleth.ChildLookup.SAMLPeerEntityContext" />
+                        </constructor-arg>
+                    </bean>
+                </constructor-arg>
+                <constructor-arg name="f">
+                    <ref bean="shibboleth.MessageContextLookup.Inbound" />
+                </constructor-arg>
+            </bean>
+        </property>
+        <property name="RPUIContextCreateStrategy">
+            <bean class="com.google.common.base.Functions" factory-method="compose">
+                <constructor-arg name="g">
+                    <ref bean="shibboleth.ChildLookupOrCreate.RelyingPartyUIContext" />
+                </constructor-arg>
+                <constructor-arg name="f">
+                    <ref bean="shibboleth.ChildLookup.RelyingParty" />
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+        
     <bean id="PopulateMultiRPContextFromLogoutContext"
         class="net.shibboleth.idp.session.impl.PopulateMultiRPContextFromLogoutContext" scope="prototype"
         p:activationCondition="%{idp.logout.elaboration:false}"
         p:roleDescriptorResolver-ref="shibboleth.RoleDescriptorResolver"
-        p:sessionTypeProtocolMap-ref="shibboleth.SessionTypeProtocolMap" />
+        p:sessionTypeProtocolMap="#{getObject('shibboleth.SessionTypeProtocolMap') ?: getObject('shibboleth.DefaultSessionTypeProtocolMap')}" />
 
     <bean id="SetRPUIInformation"
             class="net.shibboleth.idp.ui.impl.SetRPUIInformation" scope="prototype"
             p:activationCondition="%{idp.logout.elaboration:false}"
             p:httpServletRequest-ref="shibboleth.HttpServletRequest">
         <property name="fallbackLanguages">
-            <bean parent="shibboleth.CommaDelimStringArray" c:_0="%{idp.ui.fallbackLanguages:}" />
+            <bean parent="shibboleth.CommaDelimStringArray" c:_0="#{'%{idp.ui.fallbackLanguages:}'.trim()}" />
         </property>
         <property name="metadataContextLookupStrategy">
             <bean class="com.google.common.base.Functions" factory-method="compose">
@@ -92,8 +124,7 @@
             </bean>
         </property>
     </bean>
-
-
+    
     <bean id="AddLogoutResponse" class="org.opensaml.saml.saml2.profile.impl.AddStatusResponseShell" scope="prototype"
             p:overwriteExisting="true"
             p:issuerLookupStrategy-ref="shibboleth.ResponderIdLookup.Simple"

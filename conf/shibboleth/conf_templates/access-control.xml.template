@@ -23,7 +23,7 @@
     <util:map id="shibboleth.AccessControlPolicies">
 
         <entry key="AccessByIPAddress">
-            <bean parent="shibboleth.IPRangeAccessControl"
+            <bean id="AccessByIPAddress" parent="shibboleth.IPRangeAccessControl"
                 p:allowedRanges={{ idpconf_access_allowed_ip_range }} />
         </entry>
 

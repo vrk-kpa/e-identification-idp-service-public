@@ -116,10 +116,10 @@
     </div>
 </main>
 #include("footer.html")
-<script src="/resources/js/vendor/jquery-1.11.2.min.js"></script>
+<script src="/resources/js/vendor/jquery.min.js"></script>
 <script src="/resources/js/vendor/js.cookie.js"></script>
 <script src="/resources/js/vendor/i18next.min.js"></script>
-<script src="/resources/js/vendor/jquery-i18next.js"></script>
+<script src="/resources/js/vendor/jquery-i18next.min.js"></script>
 <script src="/resources/js/vendor/i18nextXHRBackend.min.js"></script>
 <script src="/resources/js/vendor/domready.js"></script>
 <script src="/resources/js/plugins.js"></script>

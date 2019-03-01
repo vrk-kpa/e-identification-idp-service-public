@@ -1,18 +1,36 @@
 # Load any additional property resources from a comma-delimited list
 idp.additionalProperties= /conf/saml-nameid.properties, /conf/services.properties
 
+# In most cases (and unless noted in the surrounding comments) the
+# commented settings in the distributed files are the default
+# behavior for V3.
+#
+# Uncomment them and change the value to change functionality.
+
 # Set the entityID of the IdP
 idp.entityID= {{ idpconf_entityid }}
+
+# Set the file path which backs the IdP's own metadata publishing endpoint at /shibboleth.
+# Set to empty value to disable and return a 404.
+#idp.entityID.metadataFile=%{idp.home}/metadata/idp-metadata.xml
 
 # Set the scope used in the attribute resolver for scoped attributes
 idp.scope= {{ idpconf_scope }}
 
 # General cookie properties (maxAge only applies to persistent cookies)
+# Note the default for idp.cookie.secure, you will usually want it set.
 idp.cookie.secure = true
 idp.cookie.httpOnly = true
 #idp.cookie.domain =
 #idp.cookie.path =
 #idp.cookie.maxAge = 31536000
+
+# HSTS/CSP response headers
+#idp.hsts = max-age=0
+# X-Frame-Options value, set to DENY or SAMEORIGIN to block framing
+#idp.frameoptions = DENY
+# Content-Security-Policy value, set to match X-Frame-Options default
+#idp.csp = frame-ancestors 'none';
 
 # Set the location of user-supplied web flow definitions
 #idp.webflows = %{idp.home}/flows
@@ -42,8 +60,11 @@ idp.encryption.cert= %{idp.home}/credentials/idp-encryption.crt
 # Sets the bean ID to use as a default security configuration set
 #idp.security.config = shibboleth.DefaultSecurityConfiguration
 
-# To default to SHA-1, set to shibboleth.SigningConfiguration.SHA1
+# To downgrade to SHA-1, set to shibboleth.SigningConfiguration.SHA1
 idp.signing.config = shibboleth.SigningConfiguration.SHA256
+
+# To upgrade to AES-GCM encryption, set to shibboleth.EncryptionConfiguration.GCM
+#idp.encryption.config = shibboleth.EncryptionConfiguration.CBC
 
 # Configures trust evaluation of keys used by services at runtime
 # Defaults to supporting both explicit key and PKIX using SAML metadata.
@@ -82,7 +103,6 @@ idp.storage.cleanupInterval = PT10M
 idp.session.enabled = true
 
 # Set to "shibboleth.StorageService" for server-side storage of user sessions
-#idp.session.StorageService = shibboleth.ClientSessionStorageService
 idp.session.StorageService = shibboleth.StorageService
 
 # Size of session IDs
@@ -103,20 +123,15 @@ idp.session.secondaryServiceIndex = true
 idp.session.defaultSPlifetime = {{ idpconf_session_length }}
 
 # Regular expression matching login flows to enable, e.g. IPAddress|Password
-#idp.authn.flows= External
-#idp.authn.flows = Disco|ext1|ext2
 idp.authn.flows = ext1
-# Regular expression of forced "initial" methods when no session exists,
-# usually in conjunction with the idp.authn.resolveAttribute property below.
-#idp.authn.flows.initial = Disco
-
-# Set to an attribute ID to resolve prior to selecting authentication flows;
-# its values are used to filter the flows to allow.
-#idp.authn.resolveAttribute = assurance
 
 # Default lifetime and timeout of various authentication methods
 idp.authn.defaultLifetime = {{ idpconf_session_length }}
 idp.authn.defaultTimeout = {{ idpconf_session_length }}
+
+# Whether to populate relying party user interface information for display
+# during authentication, consent, terms-of-use.
+#idp.authn.rpui = true
 
 # Whether to prioritize "active" results when an SP requests more than
 # one possible matching login method (V2 behavior was to favor them)
@@ -131,8 +146,14 @@ idp.authn.favorSSO = true
 
 # Set to "shibboleth.consent.AttributeConsentStorageKey" to use an attribute
 # to key user consent storage records (and set the attribute name)
-#idp.consent.userStorageKey = shibboleth.consent.PrincipalConsentStorageKey
-#idp.consent.userStorageKeyAttribute = uid
+#idp.consent.attribute-release.userStorageKey = shibboleth.consent.PrincipalConsentStorageKey
+#idp.consent.attribute-release.userStorageKeyAttribute = uid
+#idp.consent.terms-of-use.userStorageKey = shibboleth.consent.PrincipalConsentStorageKey
+#idp.consent.terms-of-use.userStorageKeyAttribute = uid
+
+# Suffix of message property used as value of consent storage records when idp.consent.compareValues is true.
+# Defaults to text displayed to the user.
+#idp.consent.terms-of-use.consentValueMessageCodeSuffix = .text
 
 # Flags controlling how built-in attribute consent feature operates
 #idp.consent.allowDoNotRemember = true
@@ -153,7 +174,7 @@ idp.authn.favorSSO = true
 # for use by user interface logic; adds overhead so off by default.
 idp.logout.elaboration = true
 
-# Whether to require logout requests be signed/authenticated.
+# Whether to require logout requests/responses be signed/authenticated.
 #idp.logout.authenticated = true
 
 # Message freshness and replay cache tuning
@@ -162,6 +183,7 @@ idp.logout.elaboration = true
 
 # Set to custom bean for alternate storage of replay cache
 #idp.replayCache.StorageService = shibboleth.StorageService
+#idp.replayCache.strict = true
 
 # Toggles whether to allow outbound messages via SAML artifact
 #idp.artifact.enabled = true
@@ -172,11 +194,6 @@ idp.logout.elaboration = true
 #idp.artifact.endpointIndex = 2
 # Set to custom bean for alternate storage of artifact map state
 #idp.artifact.StorageService = shibboleth.StorageService
-
-# Name of access control policy for various admin flows
-idp.status.accessPolicy= AccessByIPAddress
-idp.resolvertest.accessPolicy= AccessByIPAddress
-idp.reload.accessPolicy= AccessByIPAddress
 
 # Comma-delimited languages to use if not match can be found with the
 # browser-supported languages, defaults to an empty list.
@@ -192,11 +209,9 @@ idp.ui.fallbackLanguages= en,fr,de
 # CAS service registry implementation class
 #idp.cas.serviceRegistryClass=net.shibboleth.idp.cas.service.PatternServiceRegistry
 
-# Profile flows in which the ProfileRequestContext should be exposed
-# in servlet request under the key "opensamlProfileRequestContext"
-#idp.profile.exposeProfileRequestContextInServletRequest = SAML2/POST/SSO,SAML2/Redirect/SSO
-
-# F-TICKS auditing - set salt to include hashed username
+# F-TICKS auditing - set a salt to include hashed username
 #idp.fticks.federation=MyFederation
 #idp.fticks.algorithm=SHA-256
 #idp.fticks.salt=somethingsecret
+#idp.fticks.loghost=localhost
+#idp.fticks.logport=514

@@ -93,10 +93,12 @@
             <form id="attribute-form" action="$flowExecutionUrl" method="post">
                 <div class="row">
                     <div class="col-xs-12 identification-info">
-                        <span data-i18n="attribute__otsikko">Olet tunnistautumassa palveluun</span>
-                        #if ($spDisplayNameFi || $spDisplayNameSv || $spDisplayNameEn)
-                            <h2 id="serviceDisplayName" name-fi="${spDisplayNameFi}" name-sv="${spDisplayNameSv}" name-en="${spDisplayNameEn}"></h2>
-                        #end
+                        <h1>
+                            <div data-i18n="attribute__otsikko" class="small">Olet tunnistautumassa palveluun</div>
+                            #if ($spDisplayNameFi || $spDisplayNameSv || $spDisplayNameEn)
+                                <div id="serviceDisplayName" class="service-display-name" name-fi="${spDisplayNameFi}" name-sv="${spDisplayNameSv}" name-en="${spDisplayNameEn}"></div>
+                            #end
+                        </h1>
                     </div>
                     <div class="col-xs-12 col-md-7">
                         <div class="box identification-details">
@@ -440,6 +442,12 @@
                                 Voit tarkastaa ja päivittää joitakin tietojasi itse Omien tietojen tarkastus -palvelussa. Osaa tiedoista ylläpitää kotikunnan mukainen maistraatti, jonka tiedot löytyvät tarkastuspalvelusta.
                             </span>
                         </p>
+                        #elseif ($personIdentifier)
+                        <p id="privacy" class="small">
+                            <span data-i18n="[html]attribute__eidas__tietolahde__muutos">
+                                Jos havaitset tiedoissasi virheitä, ole yhteydessä tunnistusvälineesi myöntäjään.
+                            </span>
+                        </p>
                         #end
                     </div>
                 </div>
@@ -449,10 +457,10 @@
 </main>
 
 #include("footer.html")
-<script src="/resources/js/vendor/jquery-1.11.2.min.js"></script>
+<script src="/resources/js/vendor/jquery.min.js"></script>
 <script src="/resources/js/vendor/js.cookie.js"></script>
 <script src="/resources/js/vendor/i18next.min.js"></script>
-<script src="/resources/js/vendor/jquery-i18next.js"></script>
+<script src="/resources/js/vendor/jquery-i18next.min.js"></script>
 <script src="/resources/js/vendor/i18nextXHRBackend.min.js"></script>
 <script src="/resources/js/vendor/domready.js"></script>
 <script src="/resources/js/plugins.js"></script>

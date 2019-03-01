@@ -4,8 +4,12 @@
     xmlns:c="http://www.springframework.org/schema/c" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
                            
+    default-init-method="initialize"
+    default-destroy-method="destroy">
+
+                      
     <!-- This set of resources supports a native Spring relying-party.xml file. -->
     <util:list id="shibboleth.RelyingPartyResolverResources">
         <value>%{idp.home}/conf/relying-party.xml</value>
@@ -46,12 +50,11 @@
     <!--
     This collection of resources differs slightly in that it should not include the file extension.
     Message sources are internationalized, and Spring will search for a compatible language extension
-    and fall back to one with a .properties extension.
+    and fall back to one with only a .properties extension.
     -->
     <util:list id="shibboleth.MessageSourceResources">
-        <value>%{idp.home}/messages/authn-messages</value>
-        <value>%{idp.home}/messages/consent-messages</value>
-        <value>%{idp.home}/messages/error-messages</value>
+        <value>%{idp.home}/messages/messages</value>
+        <value>%{idp.home}/system/messages/messages</value>
     </util:list>
     
 </beans>

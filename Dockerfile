@@ -1,6 +1,6 @@
 # Pull tomcat base image
 
-FROM e-identification-docker-virtual.vrk-artifactory-01.eden.csc.fi/e-identification-tomcat-idp-3.2.1-base-image:v2
+FROM e-identification-docker-virtual.vrk-artifactory-01.eden.csc.fi/e-identification-tomcat-idp-3.4.1-base-image
 
 # Copy files
 

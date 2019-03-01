@@ -48,12 +48,14 @@ public class ProxyClient {
     }
 
     public ProxyMessageDTO addSession(String relyingParty,
+                                      String entityId,
+                                      String countryCode,
                                       String uid,
                                       String key,
                                       String authMethodReqStr,
                                       String logTag) {
-        logger.debug("Add new session - relying party: {}, uid: {}, conversation key: {}, authentication methods: {}, tag: {}", relyingParty, uid, key, authMethodReqStr, logTag);
-        return proxyResource.fromIdPInitSession(relyingParty, uid, key, authMethodReqStr, logTag);
+        logger.debug("Add new session - relying party: {}, entityId: {}, countryCode: {}, uid: {}, conversation key: {}, authentication methods: {}, tag: {}", relyingParty, entityId, countryCode, uid, key, authMethodReqStr, logTag);
+        return proxyResource.fromIdPInitSession(relyingParty, entityId, countryCode, uid, key, authMethodReqStr, logTag);
     }
 
     public ProxyMessageDTO getSessionByTokenId(String tokenId, String phaseId, String logTag) {

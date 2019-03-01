@@ -1,13 +1,14 @@
 # Shibboleth Identity Provider properties
 proxy.url={{proxy_rest_url}}/rest/proxy/
 sp.redirect.url={{sp_redirect_url}}
-sp.login.path={{sp_login_path}}
 discovery.page.path={{discovery_page_path}}
+sp.redirect.base.path={{sp_redirect_base_path}}
 default.error.url={{ idpconf_error_url }}
 failure.param.internal=int
 failure.param.idp.ext=idpext
 failure.param.entityid=entid
 failure.param.phaseid=phid
+failure.param.phaseid.disco=phid-disco-timeout
 failure.param.cancel=cancel
 failure.param.cookiesdisabled=cookie
 # -----------------------------------------------
@@ -16,7 +17,9 @@ failure.param.cookiesdisabled=cookie
 phase.id.shared.secret={{phase_id_shared_secret}}
 phase.id.time.built.interval={{phase_id_time_built_interval}}
 phase.id.time.init.interval={{phase_id_time_interval}}
+phase.id.time.auth.interval={{phase_id_time_interval_auth}}
 phase.id.algorithm=HmacSHA256
+phase.id.step.zero={{phase_id_step_zero}}
 phase.id.step.one={{phase_id_step_one}}
 phase.id.step.three={{phase_id_step_three}}
 phase.id.step.four={{phase_id_step_four}}

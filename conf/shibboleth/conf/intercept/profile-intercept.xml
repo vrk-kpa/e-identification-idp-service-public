@@ -26,9 +26,13 @@
             <list merge="true">
                 <bean id="intercept/context-check" parent="shibboleth.InterceptFlow" />
         
+                <bean id="intercept/expiring-password" parent="shibboleth.InterceptFlow" />
+        
                 <bean id="intercept/terms-of-use" parent="shibboleth.consent.TermsOfUseFlow" />
         
                 <bean id="intercept/attribute-release" parent="shibboleth.consent.AttributeReleaseFlow" />
+         
+                <bean id="intercept/impersonate" parent="shibboleth.InterceptFlow" />
 
                 <bean id="intercept/vtjverify" parent="shibboleth.InterceptFlow" />
                 

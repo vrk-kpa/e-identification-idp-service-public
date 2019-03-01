@@ -2,216 +2,206 @@
 <!--
     This file contains the SAML2 attribute mapping and resolver definition
 -->
-<resolver:AttributeResolver
-        xmlns:resolver="urn:mace:shibboleth:2.0:resolver"
-        xmlns:pc="urn:mace:shibboleth:2.0:resolver:pc"
-        xmlns:ad="urn:mace:shibboleth:2.0:resolver:ad"
-        xmlns:dc="urn:mace:shibboleth:2.0:resolver:dc"
-        xmlns:enc="urn:mace:shibboleth:2.0:attribute:encoder"
-        xmlns:sec="urn:mace:shibboleth:2.0:security"
+<AttributeResolver
+        xmlns="urn:mace:shibboleth:2.0:resolver"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:kapa="fi.vm.kapa.identification.shibboleth"
         xsi:schemaLocation="urn:mace:shibboleth:2.0:resolver http://shibboleth.net/schema/idp/shibboleth-attribute-resolver.xsd
-                            urn:mace:shibboleth:2.0:resolver:pc http://shibboleth.net/schema/idp/shibboleth-attribute-resolver-pc.xsd
-                            urn:mace:shibboleth:2.0:resolver:ad http://shibboleth.net/schema/idp/shibboleth-attribute-resolver-ad.xsd
-                            urn:mace:shibboleth:2.0:resolver:dc http://shibboleth.net/schema/idp/shibboleth-attribute-resolver-dc.xsd
-                            urn:mace:shibboleth:2.0:attribute:encoder http://shibboleth.net/schema/idp/shibboleth-attribute-encoder.xsd
-                            urn:mace:shibboleth:2.0:security http://shibboleth.net/schema/idp/shibboleth-security.xsd
                             fi.vm.kapa.identification.shibboleth classpath:/schema/extDataConnector.xsd">
 
     <!-- ========================================== -->
     <!--      Attribute Definitions                 -->
     <!-- ========================================== -->
 
-    <resolver:AttributeDefinition id="electronicIdentificationNumber" xsi:type="ad:Simple" sourceAttributeID="samlElectronicIdentificationNumber">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.22" friendlyName="electronicIdentificationNumber" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="electronicIdentificationNumber" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlElectronicIdentificationNumber"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.22" friendlyName="electronicIdentificationNumber" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="nationalIdentificationNumber" xsi:type="ad:Simple" sourceAttributeID="samlNationalIdentificationNumber">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.21" friendlyName="nationalIdentificationNumber" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="nationalIdentificationNumber" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlNationalIdentificationNumber"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.21" friendlyName="nationalIdentificationNumber" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="protectionOrder" xsi:type="ad:Simple" sourceAttributeID="samlProtectionOrder">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.27" friendlyName="TurvakieltoTieto" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="protectionOrder" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlProtectionOrder"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.27" friendlyName="TurvakieltoTieto" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="cn" xsi:type="ad:Simple" sourceAttributeID="samlCn">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:2.5.4.3" friendlyName="cn" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="cn" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlCn"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:2.5.4.3" friendlyName="cn" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="sn" xsi:type="ad:Simple" sourceAttributeID="samlSn">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:2.5.4.4" friendlyName="sn" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="sn" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlSn"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:2.5.4.4" friendlyName="sn" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="firstName" xsi:type="ad:Simple" sourceAttributeID="samlFirstName">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/CurrentGivenName" friendlyName="firstName" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="firstName" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlFirstName"/>
+        <AttributeEncoder xsi:type="SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/CurrentGivenName" friendlyName="firstName" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="familyName" xsi:type="ad:Simple" sourceAttributeID="samlFamilyName">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/CurrentFamilyName" friendlyName="familyName" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="familyName" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlFamilyName"/>
+        <AttributeEncoder xsi:type="SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/CurrentFamilyName" friendlyName="familyName" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="dateOfBirth" xsi:type="ad:Simple" sourceAttributeID="samlDateOfBirth">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/DateOfBirth" friendlyName="dateOfBirth" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="dateOfBirth" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlDateOfBirth"/>
+        <AttributeEncoder xsi:type="SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/DateOfBirth" friendlyName="dateOfBirth" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="givenName" xsi:type="ad:Simple" sourceAttributeID="samlGivenName">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:2.5.4.42" friendlyName="givenName" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="givenName" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlGivenName"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:2.5.4.42" friendlyName="givenName" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="displayName" xsi:type="ad:Simple" sourceAttributeID="samlDisplayName">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:2.16.840.1.113730.3.1.241" friendlyName="displayName" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="displayName" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlDisplayName"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:2.16.840.1.113730.3.1.241" friendlyName="displayName" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="telephone" xsi:type="ad:Simple" sourceAttributeID="samlTelephone">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:2.5.4.20" friendlyName="telephone" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="telephone" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlTelephone"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:2.5.4.20" friendlyName="telephone" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="mobile" xsi:type="ad:Simple" sourceAttributeID="samlMobile">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:0.9.2342.19200300.100.1.41" friendlyName="mobile" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="mobile" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlMobile"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:0.9.2342.19200300.100.1.41" friendlyName="mobile" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="mail" xsi:type="ad:Simple" sourceAttributeID="samlMail">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:0.9.2342.19200300.100.1.3" friendlyName="mail" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="mail" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlMail"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:0.9.2342.19200300.100.1.3" friendlyName="mail" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="municipalityCode" xsi:type="ad:Simple" sourceAttributeID="samlMunicipalityCode">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.18" friendlyName="KotikuntaKuntanumero" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="municipalityCode" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlMunicipalityCode"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.18" friendlyName="KotikuntaKuntanumero" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="municipality" xsi:type="ad:Simple" sourceAttributeID="samlMunicipality">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.19" friendlyName="KotikuntaKuntaS" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="municipality" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlMunicipality"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.19" friendlyName="KotikuntaKuntaS" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="domesticAddress" xsi:type="ad:Simple" sourceAttributeID="samlDomesticAddress">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.4" friendlyName="VakinainenKotimainenLahiosoiteS" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="domesticAddress" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlDomesticAddress"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.4" friendlyName="VakinainenKotimainenLahiosoiteS" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="postalCode" xsi:type="ad:Simple" sourceAttributeID="samlPostalCode">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.6" friendlyName="VakinainenKotimainenLahiosoitePostinumero" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="postalCode" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlPostalCode"/>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.6" friendlyName="VakinainenKotimainenLahiosoitePostinumero" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="city" xsi:type="ad:Simple" sourceAttributeID="samlCity">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.7" friendlyName="VakinainenKotimainenLahiosoitePostitoimipaikkaS" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="city" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlCity" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.7" friendlyName="VakinainenKotimainenLahiosoitePostitoimipaikkaS" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="foreignAddress" xsi:type="ad:Simple" sourceAttributeID="samlForeignAddress">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.11" friendlyName="VakinainenUlkomainenLahiosoite" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="foreignAddress" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlForeignAddress" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.11" friendlyName="VakinainenUlkomainenLahiosoite" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="foreignLocalityAndState" xsi:type="ad:Simple" sourceAttributeID="samlForeignLocalityAndState">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.12" friendlyName="VakinainenUlkomainenLahiosoitePaikkakuntaJaValtioS" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="foreignLocalityAndState" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlForeignLocalityAndState" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.12" friendlyName="VakinainenUlkomainenLahiosoitePaikkakuntaJaValtioS" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="foreignLocalityAndStateClearText" xsi:type="ad:Simple" sourceAttributeID="samlForeignLocalityAndStateClearText">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.14" friendlyName="VakinainenUlkomainenLahiosoitePaikkakuntaJaValtioSelvakielinen" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="foreignLocalityAndStateClearText" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlForeignLocalityAndStateClearText" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.14" friendlyName="VakinainenUlkomainenLahiosoitePaikkakuntaJaValtioSelvakielinen" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="stateCode" xsi:type="ad:Simple" sourceAttributeID="samlState">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.15" friendlyName="VakinainenUlkomainenLahiosoiteValtiokoodi3" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="stateCode" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlState" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.15" friendlyName="VakinainenUlkomainenLahiosoiteValtiokoodi3" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="temporaryPostalCode" xsi:type="ad:Simple" sourceAttributeID="samlTemporaryPostalCode">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.33" friendlyName="TilapainenKotimainenLahiosoitePostinumero" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="temporaryPostalCode" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlTemporaryPostalCode" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.33" friendlyName="TilapainenKotimainenLahiosoitePostinumero" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="temporaryDomesticAddress" xsi:type="ad:Simple" sourceAttributeID="samlTemporaryDomesticAddress">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.31" friendlyName="TilapainenKotimainenLahiosoiteS" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="temporaryDomesticAddress" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlTemporaryDomesticAddress" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.31" friendlyName="TilapainenKotimainenLahiosoiteS" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="temporaryCity" xsi:type="ad:Simple" sourceAttributeID="samlTemporaryCity">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.34" friendlyName="TilapainenKotimainenLahiosoitePostitoimipaikkaS" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="temporaryCity" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlTemporaryCity" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.34" friendlyName="TilapainenKotimainenLahiosoitePostitoimipaikkaS" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="authenticationProvider" xsi:type="ad:Simple" sourceAttributeID="samlAuthenticationProvider">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.31350.1.11" friendlyName="authenticationProvider" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="authenticationProvider" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlAuthenticationProvider" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.3.6.1.4.1.31350.1.11" friendlyName="authenticationProvider" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="kid" xsi:type="ad:Simple" sourceAttributeID="samlKid">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.3003.113.4" friendlyName="kid" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="kid" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlKid" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.3003.113.4" friendlyName="kid" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="legacyKid" xsi:type="ad:Simple" sourceAttributeID="legacyKid">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="tfi.kid" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="legacyKid" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="legacyKid"/>
+        <AttributeEncoder xsi:type="SAML2String" name="tfi.kid" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="legacyPin" xsi:type="ad:Simple" sourceAttributeID="legacyPin">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="tfi.pin" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="legacyPin" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="legacyPin" />
+        <AttributeEncoder xsi:type="SAML2String" name="tfi.pin" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="legacyPersonName" xsi:type="ad:Simple" sourceAttributeID="legacyPersonName">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="tfi.personname" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="legacyPersonName" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="legacyPersonName" />
+        <AttributeEncoder xsi:type="SAML2String" name="tfi.personname" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="legacyVersion" xsi:type="ad:Simple" sourceAttributeID="legacyVersion">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="tfi.version" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="legacyVersion" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="legacyVersion" />
+        <AttributeEncoder xsi:type="SAML2String" name="tfi.version" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="vtjVerified" xsi:type="ad:Simple" sourceAttributeID="samlVtjVerified">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.3002.111.2" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="vtjVerified" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlVtjVerified" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.3002.111.2" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="vtjRequired" xsi:type="ad:Simple" sourceAttributeID="samlVtjRequired">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="vtj.required" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="vtjRequired" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlVtjRequired" />
+        <AttributeEncoder xsi:type="SAML2String" name="vtj.required" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="vtjInvalid" xsi:type="ad:Simple" sourceAttributeID="samlVtjInvalid">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="vtj.invalid" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="vtjInvalid" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlVtjInvalid" />
+        <AttributeEncoder xsi:type="SAML2String" name="vtj.invalid" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="proxySessionMismatch" xsi:type="ad:Simple" sourceAttributeID="proxySessionMismatch">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.3002.111.2" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="proxySessionMismatch" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="proxySessionMismatch" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.3002.111.2" encodeType="false" />
+    </AttributeDefinition>
     
-    <resolver:AttributeDefinition id="personIdentifier" xsi:type="ad:Simple" sourceAttributeID="samlPersonIdentifier">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/PersonIdentifier" friendlyName="personIdentifier" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="personIdentifier" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlPersonIdentifier" />
+        <AttributeEncoder xsi:type="SAML2String" name="http://eidas.europa.eu/attributes/naturalperson/PersonIdentifier" friendlyName="personIdentifier" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="finnishCitizenship" xsi:type="ad:Simple" sourceAttributeID="samlFinnishCitizenship">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.2002.2.26" friendlyName="SuomenKansalaisuusTietokoodi" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="finnishCitizenship" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlFinnishCitizenship" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.2002.2.26" friendlyName="SuomenKansalaisuusTietokoodi" encodeType="false" />
+    </AttributeDefinition>
 
-    <resolver:AttributeDefinition id="authenticationToken" xsi:type="ad:Simple" sourceAttributeID="samlAuthenticationToken">
-        <resolver:Dependency ref="extDataConn" />
-        <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.2.246.517.3002.111.5" friendlyName="authenticationToken" encodeType="false" />
-    </resolver:AttributeDefinition>
+    <AttributeDefinition id="authenticationToken" xsi:type="Simple">
+        <InputDataConnector ref="extDataConn" attributeNames="samlAuthenticationToken" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.2.246.517.3002.111.5" friendlyName="authenticationToken" encodeType="false" />
+    </AttributeDefinition>
 
 
     <!-- ========================================== -->
@@ -222,11 +212,11 @@
     This external data connector makes a connection to Proxy backend
     from where it fetches the session specific attributes
     -->
-    <resolver:DataConnector id="extDataConn"
+    <DataConnector id="extDataConn"
                             xsi:type="kapa:ProxyDataConnector"
                             xmlns:kapa="fi.vm.kapa.identification.shibboleth"
 			    proxyUrl="{{proxy_rest_url}}/rest/proxy/"
 			    proxySessionMismatchAttribute="proxySessionMismatch">
-    </resolver:DataConnector>
+    </DataConnector>
 
-</resolver:AttributeResolver>
+</AttributeResolver>

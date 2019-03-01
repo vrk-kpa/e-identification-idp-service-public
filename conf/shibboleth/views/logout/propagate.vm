@@ -26,13 +26,15 @@
 #parse("./include.vm")
 <div class="row">
      <div class="col-xs-12 identification-info">
-         <span data-i18n="logout__uloskirjautunut">Olet kirjautunut ulos palvelusta</span>
-         #if ($spDisplayNameFi || $spDisplayNameSv || $spDisplayNameEn)
-             <h2 id="serviceDisplayName"></h2>
-         #end
-         <span id="serviceDisplayNameFi" class="visuallyhidden">$spDisplayNameFi</span>
-         <span id="serviceDisplayNameSv" class="visuallyhidden">$spDisplayNameSv</span>
-         <span id="serviceDisplayNameEn" class="visuallyhidden">$spDisplayNameEn</span>
+         <h1>
+            <div data-i18n="logout__uloskirjautunut" class="small">Olet kirjautunut ulos palvelusta</div>
+            #if ($spDisplayNameFi || $spDisplayNameSv || $spDisplayNameEn)
+                <div id="serviceDisplayName"></div>
+            #end
+            <span id="serviceDisplayNameFi" class="visuallyhidden">$spDisplayNameFi</span>
+            <span id="serviceDisplayNameSv" class="visuallyhidden">$spDisplayNameSv</span>
+            <span id="serviceDisplayNameEn" class="visuallyhidden">$spDisplayNameEn</span>
+         </h1>
      </div>
 
     <div class="col-xs-12">
@@ -89,7 +91,7 @@
         </div>
     </div>
 </div>
-<script src="/resources/js/vendor/jquery-1.11.2.min.js"></script>
+<script src="/resources/js/vendor/jquery.min.js"></script>
     #foreach ($entry in $logoutContext.getKeyedSessionMap().entrySet())
         #if ($flowSelector.apply($entry.getValue()))
             #set ($trackerId = "result_$codecUtil.hex($entry.getValue().getId().getBytes())")
