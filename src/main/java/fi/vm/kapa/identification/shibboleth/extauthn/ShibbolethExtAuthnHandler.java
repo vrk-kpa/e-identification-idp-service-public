@@ -73,6 +73,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
 
     private final static Logger logger = LoggerFactory.getLogger(ShibbolethExtAuthnHandler.class);
     private final static String LANG_COOKIE_NAME = "E-Identification-Lang";
+    private final static String LOGTAG_COOKIE_NAME = "E-Identification-LogTag";
     private final static String DEFAULT_LANG = "fi";
 
     private String sharedSecret;
@@ -285,6 +286,7 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
                 if (StringUtils.isBlank(logTag)) {
                     logTag = createLogTag();
                 }
+                setLogTagCookie(request, response, logTag);
                 String redirectUrl = createDiscoveryPageUrl(relyingParty, tokenId, phaseId, logTag, requestedAuthenticationMethodSetString, convKey);
                 logger.debug("(Initial redirectUrl to SP:  " + redirectUrl);
                 response.sendRedirect(redirectUrl);
@@ -749,6 +751,18 @@ public class ShibbolethExtAuthnHandler extends HttpServlet {
         langCookie.setPath("/");
         langCookie.setSecure(true);
         response.addCookie(langCookie);
+    }
+
+    private void setLogTagCookie(HttpServletRequest request, HttpServletResponse response, String logTag) {
+        Cookie logTagCookie = getCookie(request, LOGTAG_COOKIE_NAME);
+        if (logTagCookie == null) {
+            logTagCookie = new Cookie(LOGTAG_COOKIE_NAME, "");
+        }
+        logTagCookie.setValue(logTag);
+        //logTagCookie.setMaxAge(1200);
+        logTagCookie.setPath("/");
+        logTagCookie.setSecure(true);
+        response.addCookie(logTagCookie);
     }
 
     /**

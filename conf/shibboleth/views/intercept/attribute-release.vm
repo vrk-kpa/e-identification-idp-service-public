@@ -64,6 +64,7 @@
 #set ($temporaryCity= $attributes.get('temporaryCity'))
 #set ($finnishCitizenship= $attributes.get('finnishCitizenship'))
 #set ($personIdentifier= $attributes.get('personIdentifier'))
+#set ($foreignPersonIdentifier= $attributes.get('foreignPersonIdentifier'))
 #parse("./include.vm")
 <!doctype html>
 <!--[if lte IE 7]> <html lang="fi" itemtype="http://schema.org/WebPage" class="no-js lte_ie9 lte_ie8 lte7"> <![endif]-->
@@ -80,6 +81,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/resources/stylesheets/style.css">
     <script src="/resources/js/vendor/modernizr-2.8.3.min.js"></script>
+    <script src="/resources/js/tietojenvalitys-history.js"></script>
     <!--[if lt IE 9]>
     <script src="/resources/js/vendor/respond.js"></script>
     <![endif]-->
@@ -349,6 +351,19 @@
                                         </td>
                                         <input id="$personIdentifier.id" type="hidden" name="_shib_idp_consentIds"
                                                value="$encoder.encodeForHTML($personIdentifier.id)"/>
+                                    </tr>
+                                #end
+                                #if($foreignPersonIdentifier)
+                                    <tr>
+                                        <td class="strong" data-i18n="attribute__foreignpersonid">Person-ID:</td>
+                                        <td class="break-words-forced">
+                                            #foreach ($value in $foreignPersonIdentifier.values)
+                                                <strong>$encoder.encodeForHTML($value.getDisplayValue())</strong>
+                                                <br>
+                                            #end
+                                        </td>
+                                        <input id="$foreignPersonIdentifier.id" type="hidden" name="_shib_idp_consentIds"
+                                               value="$encoder.encodeForHTML($foreignPersonIdentifier.id)"/>
                                     </tr>
                                 #end
 

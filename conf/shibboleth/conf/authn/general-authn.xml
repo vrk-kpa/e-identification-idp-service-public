@@ -38,6 +38,7 @@
                     <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oid:1.2.246.517.3002.110.6" />
                     <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oid:1.2.246.517.3002.110.11" />
                     <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oid:1.2.246.517.3002.110.999" />
+                    <bean parent="shibboleth.SAML2AuthnContextClassRef" c:classRef="urn:oid:1.2.246.517.3002.110.7" />
                 </util:list>
             </property>
         </bean>

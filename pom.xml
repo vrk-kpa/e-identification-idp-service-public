@@ -39,7 +39,7 @@
         <spring.webflow.version>2.4.8.RELEASE</spring.webflow.version>
         <servlet.version>4.0.0</servlet.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <shibboleth.version>3.4.1</shibboleth.version>
+        <shibboleth.version>3.4.6</shibboleth.version>
         <junit.version>4.9</junit.version>
         <mockito.version>1.10.19</mockito.version>
         <powermock.version>1.6.6</powermock.version>
@@ -47,6 +47,7 @@
         <docker.image.prefix>e-identification-docker-virtual.vrk-artifactory-01.eden.csc.fi</docker.image.prefix>
         <spotify-docker.version>0.3.1</spotify-docker.version>
         <jersey.version>2.22.1</jersey.version>
+        <jackson.version>2.8.3</jackson.version>
         <!-- KAPA internal versions -->
         <kapa.shared.version>1.0-SNAPSHOT</kapa.shared.version>
     </properties>
@@ -133,6 +134,25 @@
             <version>${jersey.version}</version>
         </dependency>
 
+       <!-- Jackson to equal or up the dependencies in Shibbolleth -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- End NOTE -->
 
         <!-- All these dependencies below are already
@@ -250,7 +270,7 @@
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
-        
+
 
     </dependencies>
 
@@ -328,6 +348,22 @@
                     <imageName>${docker.image.prefix}/${project.artifactId}${docker.image.tag}</imageName>
                     <dockerDirectory>.</dockerDirectory>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>5.0.0-M3</version>
+                <configuration>
+                    <failBuildOnCVSS>11</failBuildOnCVSS>
+                    <!-- <suppressionFiles>${basedir}/suppressions.xml</suppressionFiles> -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+              </executions>
             </plugin>
         </plugins>
     </build>

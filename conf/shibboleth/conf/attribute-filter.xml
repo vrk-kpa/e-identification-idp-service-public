@@ -130,6 +130,10 @@
             <PermitValueRule xsi:type="ANY"/>
         </AttributeRule>
 
+        <AttributeRule attributeID="foreignPersonIdentifier">
+            <PermitValueRule xsi:type="ANY"/>
+        </AttributeRule>
+
         <AttributeRule attributeID="kid">
             <PermitValueRule xsi:type="AttributeInMetadata" onlyIfRequired="false"/>
         </AttributeRule>

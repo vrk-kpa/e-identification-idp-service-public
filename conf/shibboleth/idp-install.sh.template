@@ -1,5 +1,5 @@
 #!/bin/sh
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+
 cd $1/usr/local/src/{{ idpconf_shibboleth_version }}/bin
 ./install.sh \
     -Didp.src.dir=$1/usr/local/src/{{ idpconf_shibboleth_version }} \
