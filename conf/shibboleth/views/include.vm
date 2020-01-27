@@ -20,15 +20,6 @@
             #if ($uiNode.getElementQName().getLocalPart().equals("DisplayName") && $uiNode.getXMLLang().equals("en"))
                 #set ($spDisplayNameEn = $uiNode.getValue())
             #end
-            #if ($uiNode.getElementQName().getLocalPart().equals("PrivacyStatementURL") && $uiNode.getXMLLang().equals("fi"))
-                #set ($privacyStatementURLFi = $uiNode.getValue())
-            #end
-            #if ($uiNode.getElementQName().getLocalPart().equals("PrivacyStatementURL") && $uiNode.getXMLLang().equals("sv"))
-                #set ($privacyStatementURLSv = $uiNode.getValue())
-            #end
-            #if ($uiNode.getElementQName().getLocalPart().equals("PrivacyStatementURL") && $uiNode.getXMLLang().equals("en"))
-                #set ($privacyStatementURLEn = $uiNode.getValue())
-            #end
         #end
     #end
 #end

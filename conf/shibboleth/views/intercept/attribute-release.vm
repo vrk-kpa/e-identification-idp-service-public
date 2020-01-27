@@ -443,21 +443,14 @@
                 <div id="attribute-info" class="col-xs-12 col-md-7">
                     <div class="sign-in-info">
                         #if ($vtjVerified && $vtjVerified.values.get(0).getValue() == "true")
-                            <p class="small" data-i18n="attribute__tietolahde">Henkilötietosi on haettu Väestötietojärjestelmästä.</p>
+                            <p class="small" data-i18n="[html]attribute__tietolahde">Tunnistautumiseen tarvittavat henkilötietosi on haettu väestötietojärjestelmästä. Voit tarkastaa omat tietosi Omien tietojen tarkastus -palvelussa.</p>
                         #end
                         <p id="privacy" class="small">
                             <span data-i18n="attribute__tietolahde__rekisteriseloste__kuvaus">
-                                Palvelu, johon olet tunnistautumassa, tarvitsee henkilötietosi asiointia varten. Palvelun rekisteriseloste kuvaa tarkemmin tietojen käyttötarkoituksen.
-                            </span>
-                            <a id="privacyStatement" href="" href-fi="${privacyStatementURLFi}" href-sv="${privacyStatementURLSv}" href-en="${privacyStatementURLEn}" rel="external" data-i18n="attribute__tietolahde__rekisteriseloste__linkki">Palvelun rekisteriseloste</a>
-                        </p>
-                        #if ($vtjVerified && $vtjVerified.values.get(0).getValue() == "true")
-                        <p id="privacy" class="small">
-                            <span data-i18n="[html]attribute__tietolahde__muutos">
-                                Voit tarkastaa ja päivittää joitakin tietojasi itse Omien tietojen tarkastus -palvelussa. Osaa tiedoista ylläpitää kotikunnan mukainen maistraatti, jonka tiedot löytyvät tarkastuspalvelusta.
+                            Palvelu, johon olet tunnistautumassa, tarvitsee henkilötietosi asiointia varten. Löydät tiedon niiden käsittelystä, kun tunnistaudut palveluun.
                             </span>
                         </p>
-                        #elseif ($personIdentifier)
+                        #if ($personIdentifier)
                         <p id="privacy" class="small">
                             <span data-i18n="[html]attribute__eidas__tietolahde__muutos">
                                 Jos havaitset tiedoissasi virheitä, ole yhteydessä tunnistusvälineesi myöntäjään.
