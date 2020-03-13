@@ -65,6 +65,7 @@
 #set ($finnishCitizenship= $attributes.get('finnishCitizenship'))
 #set ($personIdentifier= $attributes.get('personIdentifier'))
 #set ($foreignPersonIdentifier= $attributes.get('foreignPersonIdentifier'))
+#set ($identityAssuranceLevel= $attributes.get('identityAssuranceLevel'))
 #parse("./include.vm")
 <!doctype html>
 <!--[if lte IE 7]> <html lang="fi" itemtype="http://schema.org/WebPage" class="no-js lte_ie9 lte_ie8 lte7"> <![endif]-->
@@ -416,6 +417,10 @@
                                 <input id="$finnishCitizenship.id" type="hidden" name="_shib_idp_consentIds"
                                        value="$encoder.encodeForHTML($finnishCitizenship.id)"/>
                             #end
+                            #if($identityAssuranceLevel)
+                                <input id="$identityAssuranceLevel.id" type="hidden" name="_shib_idp_consentIds"
+                                       value="$encoder.encodeForHTML($identityAssuranceLevel.id)"/>
+                            #end
                             <div class="row attribute-buttons">
                                 <div class="col-xs-12 col-md-8">
 
@@ -448,6 +453,11 @@
                         <p id="privacy" class="small">
                             <span data-i18n="attribute__tietolahde__rekisteriseloste__kuvaus">
                             Palvelu, johon olet tunnistautumassa, tarvitsee henkilötietosi asiointia varten. Löydät tiedon niiden käsittelystä, kun tunnistaudut palveluun.
+                            </span>
+                        </p>
+                         <p id="sso-info" class="small">
+                            <span data-i18n="attribute__kertakirjautuminen__kuvaus">
+                            Kun tunnistaudut yhteen Suomi.fi-tunnistusta käyttävään asiointipalveluun, voit siirtyä toisiin palveluihin 32 minuutin ajan ilman uutta tunnistautumista. Kun kirjaudut ulos yhdestä käyttämästäsi palvelusta, kirjaudut samalla ulos kaikista.
                             </span>
                         </p>
                         #if ($personIdentifier)
