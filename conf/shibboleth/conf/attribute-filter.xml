@@ -127,11 +127,11 @@
         </AttributeRule>
         
         <AttributeRule attributeID="personIdentifier">
-            <PermitValueRule xsi:type="ANY"/>
+            <PermitValueRule xsi:type="AttributeInMetadata" onlyIfRequired="false"/>
         </AttributeRule>
 
         <AttributeRule attributeID="foreignPersonIdentifier">
-            <PermitValueRule xsi:type="ANY"/>
+            <PermitValueRule xsi:type="AttributeInMetadata" onlyIfRequired="false"/>
         </AttributeRule>
 
         <AttributeRule attributeID="kid">

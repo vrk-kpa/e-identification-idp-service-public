@@ -455,11 +455,13 @@
                             Palvelu, johon olet tunnistautumassa, tarvitsee henkilötietosi asiointia varten. Löydät tiedon niiden käsittelystä, kun tunnistaudut palveluun.
                             </span>
                         </p>
+                        #if (!$personIdentifier)
                          <p id="sso-info" class="small">
                             <span data-i18n="attribute__kertakirjautuminen__kuvaus">
                             Kun tunnistaudut yhteen Suomi.fi-tunnistusta käyttävään asiointipalveluun, voit siirtyä toisiin palveluihin 32 minuutin ajan ilman uutta tunnistautumista. Kun kirjaudut ulos yhdestä käyttämästäsi palvelusta, kirjaudut samalla ulos kaikista.
                             </span>
                         </p>
+                        #end
                         #if ($personIdentifier)
                         <p id="privacy" class="small">
                             <span data-i18n="[html]attribute__eidas__tietolahde__muutos">
